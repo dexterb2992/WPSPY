@@ -6,13 +6,7 @@
 		include plugin_dir_path( __FILE__ )."classes/helpers.php";
 	?>
 	<div class="wpspy-content">
-		<div class="wpspy-form">
-			<iframe src="about:blank" id="remember" name="remember" class="hidden"></iframe>
-			<form method="post" action="" id="form_wpspy" target="remember">
-				<input	type="text" name="wpspy_url" id="wpspy_url" placeholder="www.example.com" />
-				<input type="submit" class="wpspy_btn" name="wpspy_submit" data-page="graphs" id="wpspy_submit" value="Go" />
-			</form>
-		</div>
+		<?php include  plugin_dir_path( __FILE__ )."_form.php"; ?>
 		<div class="wpspy-results row">
 			<div class="col-12">
 				<div class="box no-border">

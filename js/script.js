@@ -120,7 +120,13 @@ $(document).ready(function(){
 			if( is_valid_url(domain) ){
 				var domain_raw = $("#wpspy_url").val();
 
-				domain = domain_raw.substring(7);
+				var scheme_index = 7;
+
+				if (domain_raw.substr(0,8) == "https://") {
+					scheme_index = 8;
+				}
+
+				domain = domain_raw.substring(scheme_index);
 				globalDomain = domain;
 				exportableData.url = domain_raw;
 
@@ -890,7 +896,8 @@ $(document).ready(function(){
 						}
 
 						$("#archived").attr('href', '//web.archive.org/web/*/'+domain_raw).addClass('spy-icon').addClass('spy-icon-eye');
-						$("#google_cached").attr('href', '//webcache.googleusercontent.com/search?cd=1&hl=en&ct=clnk&gl=us&q=cache:'+domain_raw).addClass('spy-icon').addClass('spy-icon-eye');
+						$("#google_cached").attr('href', '//webcache.googleusercontent.com/search?cd=1&hl=en&ct=clnk&gl=us&q=cache:'+domain_raw)
+							.addClass('spy-icon').addClass('spy-icon-eye');
 
 						if( data === false ){
 							progress_limit = 4;
@@ -1015,7 +1022,7 @@ $(document).ready(function(){
 
 							$("#alexa_rank").html(data.alexa_rank);
 							$("#quantcast_traffic").html(data.quantcast_traffic);
-							$("#google_page_rank").html(data.google_page_rank);
+							// $("#google_page_rank").html(data.google_page_rank);
 							$.each(data, function (i, row){
 								// pages indexed
 									var index = i.indexOf('page_indexed_', 0);
@@ -1550,15 +1557,15 @@ $(document).ready(function(){
 									'<span id="quantcast_traffic">'+data[0].quantcast_traffic_rank+'</span>'+
 								'</div>'+
 							'</div>'+
-							'<div class="entry">'+
-								'<div class="left">'+
-									'<span class="spy-icon-google spy-icon"></span>'+
-									'Google Page Rank'+
-								'</div>'+
-								'<div class="right">'+
-									'<span id="google_page_rank">'+data[0].google_page_rank+'/10</span>'+
-								'</div>'+
-							'</div>'+
+							// '<div class="entry">'+
+							// 	'<div class="left">'+
+							// 		'<span class="spy-icon-google spy-icon"></span>'+
+							// 		'Google Page Rank'+
+							// 	'</div>'+
+							// 	'<div class="right">'+
+							// 		'<span id="google_page_rank">'+data[0].google_page_rank+'/10</span>'+
+							// 	'</div>'+
+							// '</div>'+
 						'</div>'+
 					'</div>';
 					var pages_indexed_arr = [
@@ -1568,7 +1575,7 @@ $(document).ready(function(){
 					];
 
 					var backlinks_arr = [
-						"backlinks_ahrefs",
+						// "backlinks_ahrefs",
 						"backlinks_alexa",
 						"backlinks_google",
 						"backlinks_open_site_explorer",
@@ -1904,7 +1911,14 @@ $(document).ready(function(){
 				    url = 'http://' + url;
 				    $("#wpspy_url").val(url);
 				}
-				url = url.substr(7,url.length);
+
+				// var scheme_index = 7;
+
+				// if (url.substr(0,8) == "https://") {
+				// 	scheme_index = 8;
+				// }
+
+				// url = url.substr(scheme_index,url.length);
 
 				var anchors = $(".nav-menu a");
 				var link_href = "";

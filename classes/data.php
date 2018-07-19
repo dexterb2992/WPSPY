@@ -269,6 +269,7 @@ function getSeoStats($domain, $format = 'json'){
 		// "ahrefs" => ($ahrefs->getBackLinks() > 0) ? $ahrefs->getBackLinks() : 'https://ahrefs.com/site-explorer/export/csv/subdomains/?target='.substr($domain, 7),
 		"ahrefs" => '<span title="Not supported anymore.">(Not supported)</a>',
 		"sogou" => ($seo->get_SogouBL() != "N/A") ? $seo->get_SogouBL() : "http://www.sogou.com/web?query=link: ".$_url["host"]
+		// "sogou" => "http://www.sogou.com/web?query=link: ".urlencode($domain)
 	);
 
 	$seostats["pages_indexed"] = array(
@@ -278,6 +279,7 @@ function getSeoStats($domain, $format = 'json'){
 		"goo" => $seo->get_GooIP(),
 		"google" => $seo->get_GIP(),
 		"sogou" => $seo->get_SogouIP(),
+		// "sogou" => "http://www.sogou.com/web?query=link: ".urlencode($domain),
 		"yahoo" => $seo->get_YahooIP(),
 		"yandex" => $seo->get_YandexIp(),
 		"_360" => $seo->get_360Ip()

@@ -6,9 +6,9 @@
 		include plugin_dir_path( __FILE__ )."classes/dbhelper.php";
 		include plugin_dir_path( __FILE__ )."classes/data.php";
 
-		if( isset( $_GET['url'] ) && trim($_GET['url']) != "" ){
+		if( isset( $_GIVEN_URL ) && trim($_GIVEN_URL) != "" ){
 
-			$cached = checkDataStatus('seo_stats', 'http://'.$_GET['url']);
+			$cached = checkDataStatus('seo_stats', $_GIVEN_URL);
 			
 			if( ($cached !== 'false') && ( isset($cached["alexa_rank"]) && 
 			$cached["alexa_rank"] != 0) ){
@@ -44,16 +44,16 @@
 				$seostats["site_metrics"]->dailytime_onsite = @$cached["dailytime_onsite"];
 				$seostats["site_metrics"]->daily_pageviews_per_visitor = @$cached["daily_pageviews_per_visitor"];
 
-				$seostats["cached"]->archive = "https://web.archive.org/web/*/http://".$_GET['url'];
-				$seostats["cached"]->google = " https://webcache.googleusercontent.com/search?cd=1&hl=en&ct=clnk&gl=us&q=cache:http://".$_GET['url'];
+				$seostats["cached"]->archive = "https://web.archive.org/web/*/http://".$_GIVEN_URL;
+				$seostats["cached"]->google = " https://webcache.googleusercontent.com/search?cd=1&hl=en&ct=clnk&gl=us&q=cache:http://".$_GIVEN_URL;
 				echo '<script>exportableData = '.json_encode($seostats).';</script>';
 			}else{
-				$html = getSeoStats("http://".$_GET['url'], 'json');
+				$html = getSeoStats($_GIVEN_URL, 'json');
 				$seostats = (array) json_decode($html);
 				echo '<script>exportableData = '.$html.';</script>';
 
 				$data_array = array();
-				$data_array["url"] = 'http://'.$_GET['url'];
+				$data_array["url"] = $_GIVEN_URL;
 				$data_array["alexa_rank"] = $seostats["rank"]->alexa_traffic_rank;
 				$data_array["google_page_rank"] = $seostats["rank"]->google_page_rank;
 				$data_array["quantcast_traffic_rank"] = $seostats["rank"]->quantcast_traffic_rank;
@@ -89,10 +89,10 @@
 				$data_array["bounce_rate"] = $temp == "" ? 0 : $temp;
 				$data_array["dailytime_onsite"] = $seostats["site_metrics"]->dailytime_onsite;
 				$data_array["daily_pageviews_per_visitor"] = $seostats["site_metrics"]->daily_pageviews_per_visitor;
-				$status = save_this_activity("http://".$_GET['url'], $data_array);
+				$status = save_this_activity($_GIVEN_URL, $data_array);
 				$data_array["cached"] = array(
-					"archive" => "https://web.archive.org/web/*/".$_GET['url'],
-					"google" => "http://webcache.googleusercontent.com/search?cd=1&hl=en&ct=clnk&gl=us&q=cache:".$_GET['url']
+					"archive" => "https://web.archive.org/web/*/".$_GIVEN_URL,
+					"google" => "http://webcache.googleusercontent.com/search?cd=1&hl=en&ct=clnk&gl=us&q=cache:".$_GIVEN_URL
 				);
 				echo '<script>exportableData = '.json_encode($data_array).';</script>';
 				
@@ -101,13 +101,7 @@
 		}
 	?>
 	<div class="wpspy-content">
-		<div class="wpspy-form">
-			<iframe src="about:blank" id="remember" name="remember" class="hidden"></iframe>
-			<form method="post" action="" id="form_wpspy" target="remember">
-				<input	type="text" name="url" id="wpspy_url" placeholder="www.example.com" value="<?php echo isset($_GET['url']) && trim($_GET['url']) != "" ? 'http://'.$_GET['url'] : ''; ?>" />
-				<input type="submit" class="wpspy_btn" name="wpspy_submit" data-page="seo-stats" id="wpspy_submit" value="Go" />
-			</form>
-		</div>
+		<?php include  plugin_dir_path( __FILE__ )."_form.php"; ?>
 		<div class="wpspy-results row">
 			<div class="col-3">
 				<div class="box rank">
@@ -136,17 +130,17 @@
 							</div>
 						</div>
 						
-						<div class="entry google">
+						<!-- <div class="entry google">
 							<div class="left">
 								<span class="spy-icon-google spy-icon"></span>
 								Google Page Rank
 							</div>
 							<div class="right">
 								<span id="google_page_rank">
-									<?php echo isset($seostats["rank"]->google_page_rank) ? $seostats["rank"]->google_page_rank : 'N/A'; ?>
+									<?php //echo isset($seostats["rank"]->google_page_rank) ? $seostats["rank"]->google_page_rank : 'N/A'; ?>
 								</span>
 							</div>
-						</div>
+						</div> -->
 					</div>
 				</div>
 

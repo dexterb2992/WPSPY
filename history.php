@@ -7,7 +7,7 @@
 	?>
 	<div class="wpspy-content">
 		<?php 
-			include ('_form.php');
+			include  plugin_dir_path( __FILE__ )."_form.php";
 			if( isset($_GIVEN_URL) && trim($_GIVEN_URL) != "" ){
 				$history = get_history_all($_GIVEN_URL);
 			}
@@ -17,7 +17,7 @@
 				<div class="history box">
 					<div class="title">
 						Previous Searches 
-						<?php  echo isset($_GIVEN_URL) ? 'for http://'.$_GIVEN_URL : ''; ?>
+						<?php  echo isset($_GIVEN_URL) ? 'for '.$_GIVEN_URL : ''; ?>
 					</div>
 					<div class="content" id="div_history_table_outer">
 						<table class="table" id="history">

@@ -2,24 +2,19 @@
 	<?php 
 		$page = 'wpspy-social-stats';
 		include plugin_dir_path( __FILE__ )."classes/config.php";
-		include plugin_dir_path( __FILE__ )."_nav.php"; 
 		include plugin_dir_path( __FILE__ )."classes/dbhelper.php";
+		include plugin_dir_path( __FILE__ )."_nav.php"; 
 		include plugin_dir_path( __FILE__ )."classes/data.php";
 	?>
 	<div class="wpspy-content">
-		<div class="wpspy-form">
-			<iframe src="about:blank" id="remember" name="remember" class="hidden"></iframe>
-			<form method="post" action="" id="form_wpspy" target="remember">
-				<input	type="text" name="wpspy_url" id="wpspy_url" placeholder="www.example.com" value="<?php echo isset($_GET['url']) && trim($_GET['url']) != "" ? 'http://'.$_GET['url'] : ''; ?>" />
-				<input type="submit" class="wpspy_btn" name="wpspy_submit" data-page="social-stats" id="wpspy_submit" value="Go" />
-			</form>
-		</div>
-		<?php 
-			if( isset($_GET['url']) && trim($_GET['url']) != "" ){
-				$cached = checkDataStatus('social_stats', 'http://'.$_GET['url']);
+		<?php
+			include  plugin_dir_path( __FILE__ )."_form.php";
+
+			if( isset($_GIVEN_URL) && trim($_GIVEN_URL) != "" ){
+				$cached = checkDataStatus('social_stats', $_GIVEN_URL);
 
 				if( ($cached !== 'false') && ( isset($cached["score_sentiment"]) && 
-				$cached["score_sentiment"] != '-') ){
+				$cached["score_sentiment"] != '-') ) {
 					$socialstats = new stdClass();
 					$socialmention = new stdClass();
 					$socialstats->social_shares = new stdClass();
@@ -36,16 +31,26 @@
 
 				}else{
 					function getsm(){
-						return json_decode(getSocialMention("http://".$_GET['url']));
+						$_GIVEN_URL = "";
+
+						if (isset($_GET['url'])) {
+							$_GIVEN_URL = preg_replace(
+							  '#((https?|ftp)://(\S*?\.\S*?))([\s)\[\]{},;"\':<]|\.\s|$)#i',
+							  "$1",
+							  $_GET['url']
+							);
+						}
+
+						return json_decode(getSocialMention($_GIVEN_URL));
 					}
 
-					$socialstats = json_decode(getSociaLStats("http://".$_GET['url'], 'json'));
+					$socialstats = json_decode(getSociaLStats($_GIVEN_URL, 'json'));
 
 					$limit = 5;
 					
 					for($x = 0; $x < $limit; $x++){
 						$socialmention = getsm();
-						if( count($socialmention) < 1 ){
+						if(isset($socialmention) && count($socialmention) < 1 ){
 							$socialmention = getsm();
 						}else{
 							break;
@@ -66,7 +71,7 @@
 					}
 
 					echo '<script>exportableData = '.json_encode($data_array).';</script>';
-					save_this_activity('http://'.$_GET['url'], $data_array);
+					save_this_activity('http://'.$_GIVEN_URL, $data_array);
 				}
 			}
 		?>
@@ -197,7 +202,7 @@
 								Mentions
 							</div>
 							<div class="right">
-								<a <?php echo isset($socialmention) ? 'href="http://socialmention.com/search?t=all&q='.urlencode('http://'.$_GET['url']).'&btnG=Search" class="spy-icon spy-icon-eye"' : 'href="#"';?> target="_blank" id="view_social_mentions"></a>
+								<a <?php echo isset($socialmention) ? 'href="http://socialmention.com/search?t=all&q='.urlencode('http://'.$_GIVEN_URL).'&btnG=Search" class="spy-icon spy-icon-eye"' : 'href="#"';?> target="_blank" id="view_social_mentions"></a>
 							</div>
 						</div>
 					</div>

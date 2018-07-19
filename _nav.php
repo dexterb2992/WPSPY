@@ -23,7 +23,7 @@
 	<div class="logo">
 		<img src="<?php echo plugins_url('/images/spy.png', __FILE__); ?>" draggable="false">
 	</div>
-<?PHP if($_REQUEST['page']!="wpspy-keycheck") { ?>
+<?PHP if($page != "wpspy-keycheck") { ?>
 	<div class="nav">
 		<div class="nav-menu <?php echo ( $page == 'wpspy-site-info') ? 'selected' : '';?>">
 			<a href="?page=wpspy-site-info<?php echo !empty($_GIVEN_URL) ? '&url='.$_GIVEN_URL : ''; ?>" data-href="?page=wpspy-site-info">Site Info</a>

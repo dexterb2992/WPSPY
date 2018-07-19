@@ -5,9 +5,16 @@ class SEOStats
 	
 	public function __construct($url) {
 	    $this->url = $url;
+	    if (strpos($url, "https://") !== false) {
+	    	$this->url_domain = substr($this->url, 8);
+	    } else if (strpos($url, "http://") !== false) {
+	    	$this->url_domain = substr($this->url, 7);
+	    } else {
+	    	$this->url_domain = $this->url;
+	    }
 	}
 	public function get_PR() {
-		// $query="http://toolbarqueries.google.com/tbr?client=navclient-auto&ch=".$this->CheckHash($this->HashURL($this->url))."&features=Rank&q=info:".$this->url."&num=100&filter=0";
+		// $query="https://toolbarqueries.google.com/tbr?client=navclient-auto&ch=".$this->CheckHash($this->HashURL($this->url))."&features=Rank&q=info:".$this->url."&num=100&filter=0";
 		// echo $query;
 		// $data=getPageData($query);
 		// $pos = strpos($data, "Rank_");
@@ -18,7 +25,7 @@ class SEOStats
 		return "<span title='As of March 7th 2016, Google has removed the public PageRank metric completely.'>(Not supported)</span>";
 	}
 	public function get_GIP(){
-		// echo $query='http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q='.urlencode('site:'.substr($this->url, 7)).'&filter=0&rsz=1';
+		// echo $query='https://ajax.googleapis.com/ajax/services/search/web?v=1.0&q='.urlencode('site:'.$this->url_domain).'&filter=0&rsz=1';
 
 		// echo $query = "https://www.googleapis.com/customsearch/v1?key=AIzaSyD32PIMgkd78HoZRXSFWf6sD68aAOJOa38&cx=006523864226390021390:h8mnbbe44qs&q=site:".$this->url.'&filter=0&rsz=1';
 
@@ -37,7 +44,7 @@ class SEOStats
 		$cxContext = stream_context_create($aContext);
 
 		
-		$url = 'http://www.google.com/search?num=100&&source=hp&q=site:'.substr($this->url, 7);
+		$url = 'https://www.google.com/search?num=100&&source=hp&q=site:'.$this->url_domain;
 		$result_in_html = getPageData($url);
 
 		if (preg_match('/Results .*? of about (.*?) from/', $result_in_html, $regs)){
@@ -51,13 +58,13 @@ class SEOStats
 		}
 	}
 	public function get_GBL(){
-		// $query="http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=link:".substr($this->url, 7)."%20site:".substr($this->url, 7)."&filter=0&rsz=1";
+		// $query="https://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=link:".$this->url_domain."%20site:".$this->url_domain."&filter=0&rsz=1";
 		// $data=getPageData($query);
 
 		// $data=json_decode($data,true);
 	 	// return isset($data['responseData']['cursor']['estimatedResultCount'])?$data['responseData']['cursor']['estimatedResultCount']:0;
 		
-		$url = 'http://www.google.com/search?hl=en&source=hp&q=link:'.substr($this->url, 7)."%20site:".substr($this->url, 7);
+		$url = 'https://www.google.com/search?hl=en&source=hp&q=link:'.$this->url_domain."%20site:".$this->url_domain;
 
 		$result_in_html = @getPageData($url);
 
@@ -91,7 +98,7 @@ class SEOStats
 	}
 
 	public function get_SEM(){
-		$query = 'http://us.backend.semrush.com/?action=report&type=domain_rank&domain='.$this->url;
+		$query = 'https://us.backend.semrush.com/?action=report&type=domain_rank&domain='.$this->url;
 		$data=getPageData($query);
 		$data=json_decode($data,true);
 
@@ -101,7 +108,7 @@ class SEOStats
 			return array('rank'=>'NA','keywords'=>'NA','traffic'=>'NA','cost'=>'NA');
 	}
 	 public function get_Alexa(){
-		 $query="http://data.alexa.com/data?cli=10&dat=snbamz&url=".$this->url;
+		 $query="https://data.alexa.com/data?cli=10&dat=snbamz&url=".$this->url;
 		 $data=getPageData($query);
 		 $rank = preg_match("/<POPULARITY[^>]*TEXT=\"([\d]*)\"/",$data,$match)?$match[1]:0;
 		 $speed = preg_match("/<SPEED[^>]*TEXT=\"([\d]*)\"/",$data,$match)?$match[1]:0;
@@ -115,7 +122,7 @@ class SEOStats
 	 }
 
 	public function get_BaiduIP(){
-		$result_in_html = getPageData('http://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd=site%3A%20'.substr($this->url, 7));
+		$result_in_html = getPageData('https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd=site%3A%20'.$this->url_domain);
 
 		
 		@$dom = new DOMDocument;
@@ -133,7 +140,7 @@ class SEOStats
 	}
 
 	 public function get_BingIP(){
-		$result_in_html = getPageData('http://www.bing.com/search?q=site:'.substr($this->url, 7).'&go=Submit&qs=bs&form=QBRE&scope=web');
+		$result_in_html = getPageData('https://www.bing.com/search?q=site:'.$this->url_domain.'&go=Submit&qs=bs&form=QBRE&scope=web');
 
 		
 		@$dom = new DOMDocument;
@@ -152,7 +159,7 @@ class SEOStats
 
 	public function get_GooIP(){
 		$count = 0;
-		$_url = 'http://search.goo.ne.jp/web.jsp?OE=UTF-8&mode=0&IE=UTF-8&MT=site'.urlencode(':'.substr($this->url, 7));
+		$_url = 'https://search.goo.ne.jp/web.jsp?OE=UTF-8&mode=0&IE=UTF-8&MT=site'.urlencode(':'.$this->url_domain);
 		$result_in_html = getPageData($_url);
 		
 		@$dom = new DOMDocument;
@@ -170,7 +177,7 @@ class SEOStats
 	}
 
 	public function get_YahooIP(){
-		$result_in_html = getPageData('http://search.yahoo.com/search?fr=sfp&p=site:'.$this->url);
+		$result_in_html = getPageData('https://search.yahoo.com/search?fr=sfp&p=site:'.$this->url);
 
 		
 		@$dom = new DOMDocument;
@@ -188,17 +195,17 @@ class SEOStats
 	}
 
 	public function get_SogouIP(){
-		$result_in_html = getPageData('http://www.sogou.com/web?query=domain:'.substr($this->url, 7));
+		$result_in_html = getPageData('https://www.sogou.com/web?query=domain:'.$this->url_domain);
 
 		
 		@$dom = new DOMDocument;
 
 		@$dom->loadHTML($result_in_html);
-		$tags = $dom->getElementsByTagName('resnum');
+		$tags = $dom->getElementsByTagName('p');
 
 		foreach ($tags as $tag) {
-		    $value = (string) $tag->getAttribute( 'id' );
-		    if ($value == 'scd_num') {
+		    $value = (string) $tag->getAttribute( 'class' );
+		    if ($value == 'num-tips') {
 		    	$temp = getTextFromNode($tag);
 		    	return number_format(filter_numbers($temp), 0); // filter response to allow only numbers
 		    }
@@ -208,15 +215,15 @@ class SEOStats
 
 	// Sogou Backlinks
 	public function get_SogouBL(){
-		$result_in_html = getPageData('http://www.sogou.com/web?query=domain:"'.substr($this->url, 7).'" url:"'.substr($this->url, 7).'"');
+		$result_in_html = getPageData('https://www.sogou.com/web?query=domain:"'.$this->url_domain.'" url:"'.$this->url_domain.'"');
 		@$dom = new DOMDocument;
 
 		@$dom->loadHTML($result_in_html);
-		$tags = $dom->getElementsByTagName('resnum');
+		$tags = $dom->getElementsByTagName('p');
 
 		foreach ($tags as $tag) {
-		    $value = (string) $tag->getAttribute( 'id' );
-		    if ($value == 'scd_num') {
+		    $value = (string) $tag->getAttribute( 'class' );
+		    if ($value == 'num-tips') {
 		    	$temp = getTextFromNode($tag);
 		    	return number_format(filter_numbers($temp), 0); // filter response to allow only numbers
 		    }
@@ -225,7 +232,7 @@ class SEOStats
 	}
 
 	public function get_360Ip(){
-		$result_in_html = getPageData('http://www.haosou.com/s?ie=utf-8&shb=1&src=home_360com&q=domain:'.substr($this->url, 7));
+		$result_in_html = getPageData('https://www.haosou.com/s?ie=utf-8&shb=1&src=home_360com&q=domain:'.$this->url_domain);
 
 		
 		@$dom = new DOMDocument;
@@ -243,18 +250,18 @@ class SEOStats
 	}
 
 	public function get_YandexIp(){
-		return 'https://www.yandex.com/yandsearch?text=site%3A'.substr($this->url, 7).'&lr=87';	
+		return 'https://www.yandex.com/yandsearch?text=site%3A'.$this->url_domain.'&lr=87';	
 	}
 
 	public function get_Cached(){
 		return array(
 			"archive" => "https://web.archive.org/web/*/".$this->url,
-			"google" => "http://webcache.googleusercontent.com/search?cd=1&hl=en&ct=clnk&gl=us&q=cache:".$this->url
+			"google" => "https://webcache.googleusercontent.com/search?cd=1&hl=en&ct=clnk&gl=us&q=cache:".$this->url
 		);
 	}
 
 	public function QuantcastRank(){
-		$html = @getPageData("https://www.quantcast.com/".substr($this->url, 7));
+		$html = @getPageData("https://www.quantcast.com/".$this->url_domain);
 
 		if( !empty($html) ){
 			

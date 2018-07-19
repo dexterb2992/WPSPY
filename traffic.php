@@ -9,8 +9,8 @@
 	<div class="wpspy-content">
 		<div class="wpspy-form">
 			<?php 
-				if( isset( $_GET['url'] ) && trim($_GET['url']) != "" ){
-					$site_metrics = get_site_metrics('http://'.$_GET['url']);
+				if( isset( $_GET['url'] ) && trim($_GIVEN_URL) != "" ){
+					$site_metrics = get_site_metrics($_GIVEN_URL);
 
 					$exportableData = $site_metrics;
 					unset($exportableData["alexa_rank_in_country"]);
@@ -27,7 +27,7 @@
 			?>
 			<iframe src="about:blank" id="remember" name="remember" class="hidden"></iframe>
 			<form method="post" action="" id="form_wpspy" target="remember">
-				<input	type="text" name="wpspy_url" id="wpspy_url" placeholder="www.example.com" value="<?php echo isset($_GET['url']) && trim($_GET['url']) != "" ? 'http://'.$_GET['url'] : ''; ?>"/>
+				<input	type="text" name="wpspy_url" id="wpspy_url" placeholder="www.example.com" value="<?php echo isset($_GIVEN_URL) && trim($_GIVEN_URL) != "" ? $_GIVEN_URL : ''; ?>"/>
 				<input type="submit" class="wpspy_btn" name="wpspy_submit" data-page="traffic" id="wpspy_submit" value="Go" />
 			</form>
 		</div>
@@ -46,7 +46,7 @@
 								</div>
 								<div id="canvas-holder">
 									<div id="traffic-graph-area">
-										<img id="traffic_graph" src="http://traffic.alexa.com/graph?o=lt&y=t&b=ffffff&n=666666&f=999999&p=4e8cff&h=150&w=340&z=30&c=1&y=t&r=6m&u=<?php echo isset($_GET['url']) ? $_GET['url'] : '';?>">
+										<img id="traffic_graph" src="http://traffic.alexa.com/graph?o=lt&y=t&b=ffffff&n=666666&f=999999&p=4e8cff&h=150&w=340&z=30&c=1&y=t&r=6m&u=<?php echo isset($_GIVEN_URL) ? $_GET['url'] : '';?>">
 									</div>
 								</div>
 							</div>
@@ -86,7 +86,7 @@
 											</thead>
 											<tbody>
 										';
-										if( (count($alexa_rank_in_country) > 1) && (is_array($alexa_rank_in_country) || is_object($alexa_rank_in_country)) ){
+										if(isset($alexa_rank_in_country) && (count($alexa_rank_in_country) > 1) && (is_array($alexa_rank_in_country) || is_object($alexa_rank_in_country)) ){
 											
 											foreach ($alexa_rank_in_country as $key) {
 												echo '<tr>

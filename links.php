@@ -9,7 +9,8 @@
 	?>
 	<div class="wpspy-content">
 		<?php
-			include ('_form.php');
+			include  plugin_dir_path( __FILE__ )."_form.php";
+			
 			if( isset($_GET['url']) && trim($_GET['url']) != "" ){
 				$_url = $_GIVEN_URL;
 				

@@ -12,3 +12,11 @@
 						</table>
 					</div>
 				</div>
+
+<?php  if (isset($_GIVEN_URL) && trim($_GIVEN_URL) != ""): ?>
+	<script>
+		$(function () {
+			$("#wpspy_url").trigger("change");
+		});
+	</script>
+<?php endif; ?>
