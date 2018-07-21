@@ -89,20 +89,20 @@ function getLinks($domain){
 				"external_links" =>array("nofollow" => $nfollow_external, "links" => $external) );
 }
 
-function getPageData($url) {
-	if(function_exists('curl_init')) {
-		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		if((ini_get('open_basedir') == '') && (ini_get('safe_mode') == 'Off')) {
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		}
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
-		return @curl_exec($ch);
-	}else {
-		return @file_get_contents($this->url);
-	}
-}
+// function getPageData($url) {
+// 	if(function_exists('curl_init')) {
+// 		$ch = curl_init($url);
+// 		curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+// 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+// 		if((ini_get('open_basedir') == '') && (ini_get('safe_mode') == 'Off')) {
+// 			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+// 		}
+// 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+// 		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+// 		return @curl_exec($ch);
+// 	}else {
+// 		return @file_get_contents($this->url);
+// 	}
+// }
 
 

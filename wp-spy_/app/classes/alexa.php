@@ -70,55 +70,69 @@ class Alexa{
 		$dom->loadHTML(self::$html);
 		$tables = $dom->getElementsByTagName("table");
 
-		foreach ($tables as $table) {
+		if (!empty($tables)) {
+			foreach ($tables as $table) {
 		   
-		    $value = (string) $table->getAttribute( 'id' );
-		    if ($value == "demographics_div_country_table") {
+			    $value = (string) $table->getAttribute( 'id' );
+			    if ($value == "demographics_div_country_table") {
 
-				$html = DOMinnerHTML($table);
+					$html = DOMinnerHTML($table);
 
-				libxml_use_internal_errors(true);
-				$dom = new DOMDocument;
-				$dom->loadHTML($html);
-
-				$tbody = $dom->getElementsByTagName('tbody')->item(0);
-
-				$html = DOMinnerHTML($tbody);
-
-				libxml_use_internal_errors(true);
-				$dom = new DOMDocument;
-				$dom->loadHTML($html);
-
-				$trs = $dom->getElementsByTagName('tr');
-
-				$i=0;
-				foreach ($trs as $tr) {
-					
-					$country = DOMinnerHTML( $tr->childNodes->item(0) );
 					libxml_use_internal_errors(true);
 					$dom = new DOMDocument;
-					$dom->loadHTML($country);
+					$dom->loadHTML($html);
 
-					$country = $dom->getElementsByTagName('a')->item(0);
-					$country_name = strToAlphanumeric( DOMinnerHTML($country, true) );
-					$country_code = strtolower( str_replace( "/topsites/countries/", "", $country->getAttribute('href') ) );
-					if( strlen($country_code) > 5 ){
-						return array("country_code" => "N/A", "country" => "N/A", "percent_of_visitors" => "N/A", "rank" => "N/A");
+					$tbody = $dom->getElementsByTagName('tbody')->item(0);
+
+					// echo '<pre>';
+
+					// print_r($tbody);
+					// echo '</pre>'; die;
+
+					$html = DOMinnerHTML($tbody);
+
+					libxml_use_internal_errors(true);
+					$dom = new DOMDocument;
+					$dom->loadHTML($html);
+
+					$trs = $dom->getElementsByTagName('tr');
+
+
+					$i=0;
+					foreach ($trs as $tr) {
+						$str = self::extractHtml($tr);
+
+						$country = str_get_html($str);
+
+						$country_name = str_replace("Ã‚Â", "", $country->find('a', 0)->plaintext);
+						$country_code = strtolower( str_replace( "/topsites/countries/", "", $country->find('a', 0)->href ) );
+
+						if( strlen($country_code) > 5 ){
+							return array("country_code" => "N/A", "country" => "N/A", "percent_of_visitors" => "N/A", "rank" => "N/A");
+						}
+
+						$rank_in_country[$i] = array(
+							"country" => $country_name,
+							"country_code" => $country_code,
+							"percent_of_visitors" => $country->find('td', 1)->plaintext,
+							"rank" => $country->find('td', 2)->plaintext
+						);
+						
+						$i++;
 					}
-					$rank_in_country[$i] = array(
-						"country" => $country_name,
-						"country_code" => $country_code,
-						"percent_of_visitors" => DOMinnerHTML($tr->childNodes->item(2), true),
-						"rank" => DOMinnerHTML($tr->childNodes->item(4), true)
-					);
-					
-					$i++;
-				}
 
-				return $rank_in_country;
-				
-		    }
+					return $rank_in_country;
+					
+			    }
+			}
 		}
+		
+		return array(
+			"country_code" => "N/A", 
+			"country" => "N/A", 
+			"percent_of_visitors" => "N/A", 
+			"rank" => "N/A"
+		);
 
 	}
 

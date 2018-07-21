@@ -86,7 +86,7 @@
 											</thead>
 											<tbody>
 										';
-										if(isset($alexa_rank_in_country) && (count($alexa_rank_in_country) > 1) && (is_array($alexa_rank_in_country) || is_object($alexa_rank_in_country)) ){
+										if(isset($alexa_rank_in_country) && !empty($alexa_rank_in_country) && (count($alexa_rank_in_country) > 1) && (is_array($alexa_rank_in_country) || is_object($alexa_rank_in_country)) ){
 											
 											foreach ($alexa_rank_in_country as $key) {
 												echo '<tr>

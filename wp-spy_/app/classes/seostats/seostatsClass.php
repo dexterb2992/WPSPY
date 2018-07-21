@@ -122,27 +122,9 @@ class SEOStats
 	 }
 
 	public function get_BaiduIP(){
-		$result_in_html = getPageData('https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd=site%3A%20'.$this->url_domain);
+		$url = 'https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd=site%3A'.$this->url_domain;
+		$result_in_html = getPageData($url);
 
-		
-		@$dom = new DOMDocument;
-
-		@$dom->loadHTML($result_in_html);
-		$tags = $dom->getElementsByTagName('div');
-
-		foreach ($tags as $tag) {
-		    $value = (string) $tag->getAttribute( 'class' );
-		    if ($value == 'nums') {
-		    	$temp = getTextFromNode($tag);
-		    	return number_format(filter_numbers($temp), 0); // filter response to allow only numbers
-		    }
-		}
-	}
-
-	 public function get_BingIP(){
-		$result_in_html = getPageData('https://www.bing.com/search?q=site:'.$this->url_domain.'&go=Submit&qs=bs&form=QBRE&scope=web');
-
-		
 		@$dom = new DOMDocument;
 
 		@$dom->loadHTML($result_in_html);
@@ -150,16 +132,43 @@ class SEOStats
 
 		foreach ($tags as $tag) {
 		    $value = (string) $tag->getAttribute( 'class' );
-		    if ($value == 'sb_count') {
-		    	$temp = $tag->nodeValue;
+		    if ($value == 'nums_text') {
+		    	$temp = getTextFromNode($tag);
 		    	return number_format(filter_numbers($temp), 0); // filter response to allow only numbers
 		    }
 		}
+
+		return 'https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd=site%3A'.$this->url_domain;
+	}
+
+	public function get_BingIP(){
+		// $result_in_html = getPageData('https://www.bing.com/search?q=site:'.$this->url_domain.'&go=Submit&qs=bs&form=QBRE&scope=web');
+		$result_in_html = getPageData('https://www.bing.com/search?q=site:'.$this->url_domain);
+
+		libxml_use_internal_errors(true);
+		$dom = new DOMDocument;
+
+		$dom->loadHTML($result_in_html);
+		$tags = $dom->getElementsByTagName('span');
+		$count = 0;
+
+		foreach ($tags as $tag) {
+		    $value = (string) $tag->getAttribute( 'class' );
+		    if ($value == 'sb_count') {
+		    	$temp = $tag->nodeValue;
+		    	$count = number_format(filter_numbers($temp), 0); // filter response to allow only numbers
+		    	break;
+		    }
+		}
+
+		return $count == 30 ? $this->get_BingIP() : $count;
 	}
 
 	public function get_GooIP(){
 		$count = 0;
-		$_url = 'https://search.goo.ne.jp/web.jsp?OE=UTF-8&mode=0&IE=UTF-8&MT=site'.urlencode(':'.$this->url_domain);
+		// $_url = 'https://search.goo.ne.jp/web.jsp?OE=UTF-8&mode=0&IE=UTF-8&MT=site'.urlencode(':'.$this->url_domain);
+		return $_url = 'https://search.goo.ne.jp/web.jsp?MT=site%3A'.$this->url_domain.'&mode=0&sbd=goo001&IE=UTF-8&OE=UTF-8&from=s_b_top_web&PT=';
+
 		$result_in_html = getPageData($_url);
 		
 		@$dom = new DOMDocument;
@@ -250,7 +259,8 @@ class SEOStats
 	}
 
 	public function get_YandexIp(){
-		return 'https://www.yandex.com/yandsearch?text=site%3A'.$this->url_domain.'&lr=87';	
+		// return 'https://www.yandex.com/yandsearch?text=site%3A'.$this->url_domain.'&lr=87';	
+		return 'https://www.yandex.com/yandsearch?text=site%3A'.$this->url_domain;	
 	}
 
 	public function get_Cached(){
@@ -282,58 +292,59 @@ class SEOStats
 	}
 
 	private function StrToNum($Str, $Check, $Magic)
-	 {
-	 $Int32Unit = 4294967296;
-	 $length = strlen($Str);
-	 for ($i = 0; $i < $length; $i++) {
-	 $Check *= $Magic;
-	 if ($Check >= $Int32Unit) {
-	 $Check = ($Check - $Int32Unit * (int) ($Check / $Int32Unit));
-	 $Check = ($Check < -2147483648) ? ($Check + $Int32Unit) : $Check;
-	 }
-	 $Check += ord($Str{$i});
-	 }
-	 return $Check;
-	 }
-	 private function HashURL($String)
-	 {
-	 $Check1 = $this->StrToNum($String, 0x1505, 0x21);
-	 $Check2 = $this->StrToNum($String, 0, 0x1003F);
-	 $Check1 >>= 2;
-	 $Check1 = (($Check1 >> 4) & 0x3FFFFC0 ) | ($Check1 & 0x3F);
-	 $Check1 = (($Check1 >> 4) & 0x3FFC00 ) | ($Check1 & 0x3FF);
-	 $Check1 = (($Check1 >> 4) & 0x3C000 ) | ($Check1 & 0x3FFF);
-	 $T1 = (((($Check1 & 0x3C0) << 4) | ($Check1 & 0x3C)) <<2 ) | ($Check2 & 0xF0F );
-	 $T2 = (((($Check1 & 0xFFFFC000) << 4) | ($Check1 & 0x3C00)) << 0xA) | ($Check2 & 0xF0F0000 );
-	 return ($T1 | $T2);
+	{
+		$Int32Unit = 4294967296;
+		$length = strlen($Str);
+		for ($i = 0; $i < $length; $i++) {
+			$Check *= $Magic;
+			if ($Check >= $Int32Unit) {
+				$Check = ($Check - $Int32Unit * (int) ($Check / $Int32Unit));
+				$Check = ($Check < -2147483648) ? ($Check + $Int32Unit) : $Check;
+			}
+			$Check += ord($Str{$i});
+		}
+		return $Check;
+	}
+	private function HashURL($String)
+	{
+		$Check1 = $this->StrToNum($String, 0x1505, 0x21);
+		$Check2 = $this->StrToNum($String, 0, 0x1003F);
+		$Check1 >>= 2;
+		$Check1 = (($Check1 >> 4) & 0x3FFFFC0 ) | ($Check1 & 0x3F);
+		$Check1 = (($Check1 >> 4) & 0x3FFC00 ) | ($Check1 & 0x3FF);
+		$Check1 = (($Check1 >> 4) & 0x3C000 ) | ($Check1 & 0x3FFF);
+		$T1 = (((($Check1 & 0x3C0) << 4) | ($Check1 & 0x3C)) <<2 ) | ($Check2 & 0xF0F );
+		$T2 = (((($Check1 & 0xFFFFC000) << 4) | ($Check1 & 0x3C00)) << 0xA) | ($Check2 & 0xF0F0000 );
+		return ($T1 | $T2);
 	 }
 	 private function CheckHash($Hashnum)
 	 {
-	 $CheckByte = 0;
-	 $Flag = 0;
-	 $HashStr = sprintf('%u', $Hashnum) ;
-	 $length = strlen($HashStr);
-	 for ($i = $length - 1; $i >= 0; $i --) {
-	 $Re = $HashStr{$i};
-	 if (1 === ($Flag % 2)) {
-	 $Re += $Re;
-	 $Re = (int)($Re / 10) + ($Re % 10);
-	 }
-	 $CheckByte += $Re;
-	 $Flag ++;
-	 }
-	 $CheckByte %= 10;
-	 if (0 !== $CheckByte) {
-	 $CheckByte = 10 - $CheckByte;
-	 if (1 === ($Flag % 2) ) {
-	 if (1 === ($CheckByte % 2)) {
-	 $CheckByte += 9;
-	 }
-	 $CheckByte >>= 1;
-	 }
-	 }
-	 return '7'.$CheckByte.$HashStr;
-	 }
+		 $CheckByte = 0;
+		 $Flag = 0;
+		 $HashStr = sprintf('%u', $Hashnum) ;
+		 $length = strlen($HashStr);
+		 for ($i = $length - 1; $i >= 0; $i --) {
+			 $Re = $HashStr{$i};
+			 if (1 === ($Flag % 2)) {
+				 $Re += $Re;
+				 $Re = (int)($Re / 10) + ($Re % 10);
+			 }
+			 $CheckByte += $Re;
+			 $Flag ++;
+		 }
+		 $CheckByte %= 10;
+		 if (0 !== $CheckByte) {
+		 	$CheckByte = 10 - $CheckByte;
+		 	if (1 === ($Flag % 2) ) {
+				if (1 === ($CheckByte % 2)) {
+				 	$CheckByte += 9;
+				}
+				$CheckByte >>= 1;
+		 	}
+		 }
+		 return '7'.$CheckByte.$HashStr;
+	}
+
 	 private function getPageData($url) {
 	    if(function_exists('curl_init')) {
 	        $ch = curl_init($url);

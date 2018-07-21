@@ -27,7 +27,7 @@
 				$seostats["backlinks"]->alexa = $cached["backlinks_alexa"];
 				$seostats["backlinks"]->open_site_explorer = $cached["backlinks_open_site_explorer"];
 				$seostats["backlinks"]->google = $cached["backlinks_google"];
-				$seostats["backlinks"]->ahrefs = $cached["backlinks_ahrefs"];
+				// $seostats["backlinks"]->ahrefs = $cached["backlinks_ahrefs"];
 				$seostats["backlinks"]->sogou = $cached["backlinks_sogou"];
 
 				$seostats["pages_indexed"]->ask = $cached["page_indexed_ask"];
@@ -68,8 +68,8 @@
 				$data_array["backlinks_alexa"] = $seostats["backlinks"]->alexa;
 				$data_array["backlinks_google"] = $seostats["backlinks"]->google;
 				$data_array["backlinks_open_site_explorer"] = $seostats["backlinks"]->open_site_explorer;
-				$data_array["backlinks_sogou"] = $seostats["backlinks"]->ahrefs;
-				$data_array["backlinks_ahrefs"] = $seostats["backlinks"]->sogou;
+				$data_array["backlinks_sogou"] = $seostats["backlinks"]->sogou;
+				// $data_array["backlinks_ahrefs"] = $seostats["backlinks"]->ahrefs;
 
 				$data_array["page_indexed_ask"] = $seostats["pages_indexed"]->ask;
 				$data_array["page_indexed_baidu"] = $seostats["pages_indexed"]->baidu;

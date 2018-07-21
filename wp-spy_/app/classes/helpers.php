@@ -14,6 +14,13 @@ function cleanStr($str){
 	return ucwords( str_replace("-", " ", $str) );
 }
 
+function clean($string) {
+   $string = str_replace(' ', '-', $string); // Replaces all spaces with hyphens.
+   $string = preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
+
+   return preg_replace('/-+/', '-', $string); // Replaces multiple hyphens with single one.
+}
+
 function filter_numbers($str){
 	return filter_var($str, FILTER_SANITIZE_NUMBER_INT);
 }
@@ -131,6 +138,7 @@ function getPageData($url, $allowsHeader = true){
     curl_setopt($curl, CURLOPT_AUTOREFERER, true);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);    # required for https urls
     curl_setopt($curl, CURLOPT_MAXREDIRS, 15);  
+    curl_setopt($curl, CURLOPT_FRESH_CONNECT, TRUE);
 
 	$html = curl_exec($curl);
 	$status = curl_getinfo($curl);
@@ -244,8 +252,10 @@ function DOMinnerHTML(DOMNode $element, $strip_tags = false) {
     $innerHTML = ""; 
     $children  = $element->childNodes;
 
-    foreach ($children as $child){ 
-        $innerHTML .= @$element->ownerDocument->saveHTML($child);
+    if (!empty($children)) {
+    	foreach ($children as $child){ 
+	        $innerHTML .= @$element->ownerDocument->saveHTML($child);
+	    }
     }
 
     if( $strip_tags == true ){
@@ -332,4 +342,13 @@ function get_sites(){
 		array_push($sites, $key->url);
 	}
 	return $sites;
+}
+
+function extractHtml($tag){
+	libxml_use_internal_errors(true);
+
+	$newdoc = new DOMDocument();
+	$cloned = $tag->cloneNode(TRUE);
+	$newdoc->appendChild($newdoc->importNode($cloned,TRUE));
+	return  $newdoc->saveHTML();
 }

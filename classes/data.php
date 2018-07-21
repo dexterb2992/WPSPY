@@ -34,28 +34,27 @@ function getWHOIS($domain, $format='json'){
 
 
 	/* get DNS */
-
-		$result = dns_get_record($parse_url['host']);
-		foreach ($result as $key) {
-			if($key['type'] == "NS"){
-				$dns[] = $key["target"];
-			}
+	$result = dns_get_record($parse_url['host']);
+	foreach ($result as $key) {
+		if($key['type'] == "NS"){
+			$dns[] = $key["target"];
 		}
+	}
 
-		$whois["dns"] = $dns;
+	$whois["dns"] = $dns;
 
 
 	// get IP Address
-		$geolocation["ip"] = gethostbyname($parse_url['host']);
+	$geolocation["ip"] = gethostbyname($parse_url['host']);
 
 	/* get geolocation */
-		$data = json_decode( @file_get_contents("http://www.geoplugin.net/json.gp?ip=".$geolocation["ip"]) );
-		$geolocation["ip"] = $geolocation["ip"];
-		$geolocation["country"] = $data->geoplugin_countryName;
-		$geolocation["city"] = $data->geoplugin_city;
-		$geolocation["region"] = $data->geoplugin_regionName;
-		$geolocation["country_code"] = strtolower($data->geoplugin_countryCode);
-		$whois["geolocation"] = $geolocation;
+	$data = json_decode( @file_get_contents("http://www.geoplugin.net/json.gp?ip=".$geolocation["ip"]) );
+	$geolocation["ip"] = $geolocation["ip"];
+	$geolocation["country"] = $data->geoplugin_countryName;
+	$geolocation["city"] = $data->geoplugin_city;
+	$geolocation["region"] = $data->geoplugin_regionName;
+	$geolocation["country_code"] = strtolower($data->geoplugin_countryCode);
+	$whois["geolocation"] = $geolocation;
 
 	if ( $format == "json" ){
 		return json_encode($whois);
@@ -267,8 +266,8 @@ function getSeoStats($domain, $format = 'json'){
 		"open_site_explorer" => "https://moz.com/researchtools/ose/links?site=".urlencode($domain),
 		"google" => $seo->get_GBL(),
 		// "ahrefs" => ($ahrefs->getBackLinks() > 0) ? $ahrefs->getBackLinks() : 'https://ahrefs.com/site-explorer/export/csv/subdomains/?target='.substr($domain, 7),
-		"ahrefs" => '<span title="Not supported anymore.">(Not supported)</a>',
-		"sogou" => ($seo->get_SogouBL() != "N/A") ? $seo->get_SogouBL() : "http://www.sogou.com/web?query=link: ".$_url["host"]
+		// "ahrefs" => '<span title="Not supported anymore.">(Not supported)</a>',
+		"sogou" => ($seo->get_SogouBL() != "N/A") ? $seo->get_SogouBL() : "https://www.sogou.com/web?query=link: ".$_url["host"]
 		// "sogou" => "http://www.sogou.com/web?query=link: ".urlencode($domain)
 	);
 

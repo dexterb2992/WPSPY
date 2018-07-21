@@ -1032,6 +1032,7 @@ table.rank-in-country span.flag {
 
 table.rank-in-country td {
   text-align: center;
+  font-size: 0.95em;
 }
 
 table.rank-in-country thead th {
