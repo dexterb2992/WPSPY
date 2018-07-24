@@ -32,6 +32,9 @@ function getWHOIS($domain, $format='json'){
 	$dns = array();
 	$parse_url = parse_url($domain);
 
+	if (!isset($parse_url['host'])) {
+		$parse_url['host'] = $parse_url['path'];
+	}
 
 	/* get DNS */
 	$result = dns_get_record($parse_url['host']);

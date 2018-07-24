@@ -92,7 +92,7 @@
 							</div>
 						</div>
 
-						<div class="entry google_count">
+						<!-- <div class="entry google_count">
 							<div class="left">
 								<span class="spy-icon-gplus spy-icon"></span>Google Plus
 							</div>
@@ -101,7 +101,7 @@
 									<?php echo isset($socialstats->social_shares->google_count) ? $socialstats->social_shares->google_count : '';?>
 								</span>
 							</div>
-						</div>
+						</div> -->
 
 						<div class="entry stumbleupon_count">
 							<div class="left">
@@ -202,7 +202,7 @@
 								Mentions
 							</div>
 							<div class="right">
-								<a <?php echo isset($socialmention) ? 'href="http://socialmention.com/search?t=all&q='.urlencode('http://'.$_GIVEN_URL).'&btnG=Search" class="spy-icon spy-icon-eye"' : 'href="#"';?> target="_blank" id="view_social_mentions"></a>
+								<a <?php echo isset($socialmention) ? 'href="http://socialmention.com/search?t=all&q='.urlencode($_GIVEN_URL).'&btnG=Search" class="spy-icon spy-icon-eye"' : 'href="#"';?> target="_blank" id="view_social_mentions"></a>
 							</div>
 						</div>
 					</div>

@@ -11,8 +11,8 @@
 		<?php
 			include  plugin_dir_path( __FILE__ )."_form.php";;
 
-			if( isset($_GET['url']) && trim($_GET['url']) != "" ){
-				$cached = checkDataStatus('site_info', 'http://'.$_GET['url']);
+			if( isset($_GIVEN_URL) && trim($_GIVEN_URL) != "" ){
+				$cached = checkDataStatus('site_info', ''.$_GIVEN_URL);
 				
 				if( ($cached !== 'false') && ( isset($cached['ip']) && $cached["ip"] != "N/A" ) ){
 					$cached["wordpress_data"] = str_replace('\\', '', $cached["wordpress_data"]);
@@ -36,9 +36,9 @@
 				}else{
 					$cached = "false";
 					
-					$onsite = json_decode(getOnSite("http://".$_GET['url'], 'json'));
-					$whois = json_decode(getWhOIS("http://".$_GET['url'], 'json'));
-					$wordpress_data = json_decode(getWordpressData("http://".$_GET['url'], 'json'));
+					$onsite = json_decode(getOnSite($_GIVEN_URL, 'json'));
+					$whois = json_decode(getWhOIS($_GIVEN_URL, 'json'));
+					$wordpress_data = json_decode(getWordpressData($_GIVEN_URL, 'json'));
 
 					$data_array = array();
 				}
@@ -54,7 +54,7 @@
 								<span class="spy-icon spy-icon-bw"></span>BuiltWith
 							</div>
 							<div class="right">
-								<a <?php echo isset($_GET['url']) ? 'href="http://builtwith.com/'.$_GET['url'].'" class="spy-icon spy-icon-eye"' : '#' ?> target="_blank" id="builtwith"></a>
+								<a <?php echo isset($_GIVEN_URL) ? 'href="http://builtwith.com/'.$_GIVEN_URL.'" class="spy-icon spy-icon-eye"' : '#' ?> target="_blank" id="builtwith"></a>
 							</div>
 						</div>
 						<div class="entry">
@@ -63,12 +63,12 @@
 							</div>
 							<div class="right">
 								<?php 
-									if(isset($_GET['url'])){
+									if(isset($_GIVEN_URL)){
 										if( isset($onsite->robot) && $onsite->robot == 'true' || $onsite->robot == '1' ){
 											$data_array["robot"] = $onsite->robot;
 											echo '<span id="robots" class="spy-icon-check spy-icon"></span>';
 										}else{
-											echo isset($_GET['url']) ? '<span>N/A</span>' : '';
+											echo isset($_GIVEN_URL) ? '<span>N/A</span>' : '';
 										}
 									}else{
 										echo '<span id="robots"></span>';
@@ -82,12 +82,12 @@
 							</div>
 							<div class="right">
 								<?php 
-									if(isset($_GET['url'])){
+									if(isset($_GIVEN_URL)){
 										if( isset($onsite->sitemap_index) && $onsite->sitemap_index == 'true' || $onsite->sitemap_index == '1' ){
 											$data_array["sitemap_index"] = $onsite->sitemap_index;
 											echo '<span id="sitemap" class="spy-icon-check spy-icon"></span>';
 										}else{
-											echo isset($_GET['url']) ? '<span>N/A</span>' : '';
+											echo isset($_GIVEN_URL) ? '<span>N/A</span>' : '';
 										}
 									}else{
 										echo '<span id="sitemap"></span>';
@@ -100,7 +100,7 @@
 								<span class="spy-icon spy-icon-sourcecode"></span>Sourcecode
 							</div>
 							<div class="right">
-								<a <?php echo isset($_GET['url']) ? 'href="view-source:http://'.$_GET['url'].'" class="spy-icon spy-icon-eye"' : '#' ?> id="source_code" target="_blank"></a>
+								<a <?php echo isset($_GIVEN_URL) ? 'href="view-source:'.$_GIVEN_URL.'" class="spy-icon spy-icon-eye"' : '#' ?> id="source_code" target="_blank"></a>
 							</div>
 						</div>
 					</div>
@@ -114,7 +114,7 @@
 								<span class="spy-icon spy-icon-ipwhois"></span>WHOIS Lookup
 							</div>
 							<div class="right">
-								<a <?php echo isset($_GET['url']) ? 'href="http://who.is/whois/'.$_GET['url'].'" class="spy-icon spy-icon-eye"' : '' ?> target="_blank" id="whois_lookup"></a>
+								<a <?php echo isset($_GIVEN_URL) ? 'href="http://who.is/whois/'.$_GIVEN_URL.'" class="spy-icon spy-icon-eye"' : '' ?> target="_blank" id="whois_lookup"></a>
 							</div>
 						</div>
 						<div class="dns">
@@ -149,7 +149,7 @@
 								McAfee Site Advisor
 							</div>
 							<div class="right">
-								<a <?php echo isset($_GET['url']) ? 'href="http://www.siteadvisor.com/sites/http://'.$_GET['url'].'" class="spy-icon spy-icon-eye"' : 'href="#"'; ?> target="_blank" id="mcafee"></a>
+								<a <?php echo isset($_GIVEN_URL) ? 'href="http://www.siteadvisor.com/sites/'.$_GIVEN_URL.'" class="spy-icon spy-icon-eye"' : 'href="#"'; ?> target="_blank" id="mcafee"></a>
 							</div>
 						</div>
 
@@ -159,7 +159,7 @@
 								Norton Safe Web
 							</div>
 							<div class="right">
-								<a <?php echo isset($_GET['url']) ? 'href="http://safeweb.norton.com/report/show?url=http://'.$_GET['url'].'" class="spy-icon spy-icon-eye"' : 'href="#"'; ?> target="_blank" id="norton"></a>
+								<a <?php echo isset($_GIVEN_URL) ? 'href="http://safeweb.norton.com/report/show?url='.$_GIVEN_URL.'" class="spy-icon spy-icon-eye"' : 'href="#"'; ?> target="_blank" id="norton"></a>
 							</div>
 						</div>
 
@@ -169,7 +169,7 @@
 								WOT
 							</div>
 							<div class="right">
-								<a <?php echo isset($_GET['url']) ? 'href="https://www.mywot.com/en/scorecard/http://'.$_GET['url'].'" class="spy-icon spy-icon-eye"' : 'href="#"'; ?> target="_blank" id="wot"></a>
+								<a <?php echo isset($_GIVEN_URL) ? 'href="https://www.mywot.com/en/scorecard/'.$_GIVEN_URL.'" class="spy-icon spy-icon-eye"' : 'href="#"'; ?> target="_blank" id="wot"></a>
 							</div>
 						</div>
 
@@ -179,7 +179,7 @@
 								Sucuri
 							</div>
 							<div class="right">
-								<a <?php echo isset($_GET['url']) ? 'href="http://sitecheck.sucuri.net/results/http://'.$_GET['url'].'" class="spy-icon spy-icon-eye"' : 'href="#"'; ?> target="_blank" id="sucuri"></a>
+								<a <?php echo isset($_GIVEN_URL) ? 'href="http://sitecheck.sucuri.net/results/'.$_GIVEN_URL.'" class="spy-icon spy-icon-eye"' : 'href="#"'; ?> target="_blank" id="sucuri"></a>
 							</div>
 						</div>
 					</div>
@@ -296,7 +296,7 @@
 										<div class="right">
 											<?php 
 												if( $wordpress_data->theme->name != null && $wordpress_data->theme->name != '' ){
-													echo ($wordpress_data->theme->link == "N/A") ? '<a href="'.$wordpress_data->theme->download.'" class="spy-icon spy-icon-download"></a>' : '';
+													echo ($wordpress_data->theme->download == "N/A") ? '<a href="'.$wordpress_data->theme->download.'" class="spy-icon spy-icon-download"></a>' : '';
 													echo ($wordpress_data->theme->link != "N/A") ? '<a href="'.$wordpress_data->theme->link.'" target="_blank" class="spy-icon spy-icon-eye"></a>' : '<a href="http://google.com/search?q=wordpress%20'.$wordpress_data->theme->name.'" target="_blank" class="spy-icon spy-icon-eye"></a>'; 
 													echo '<span class="spy-icon spy-icon-theme"></span>';
 												}
@@ -309,7 +309,7 @@
 								// Save to database
 								if( @$cached == 'false' ){
 									echo '<script>exportableData = '.json_encode($data_array).';</script>';
-									$status = save_this_activity("http://".$_GET['url'], $data_array);
+									$status = save_this_activity($_GIVEN_URL, $data_array);
 								}
 							?>
 						</div>

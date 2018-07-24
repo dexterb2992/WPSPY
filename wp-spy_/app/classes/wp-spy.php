@@ -292,7 +292,8 @@ class WpSpy{
 
 			libxml_use_internal_errors(true);
 
-			$html = @file_get_contents('https://wordpress.org/themes/'.$plugin_theme);
+			// $html = @file_get_contents('https://wordpress.org/themes/'.$plugin_theme);
+			$html = getPageData('https://wordpress.org/themes/'.$plugin_theme);
 
 			$dom = new DOMDocument;
 			@$dom->loadHTML($html);
@@ -321,10 +322,22 @@ class WpSpy{
 	static function downloadThemePlugin($plugin_theme, $type){
 		libxml_use_internal_errors(true);
 		$url = "https://wordpress.org/".$type."/".$plugin_theme;
-		$html = @file_get_contents($url);
+		// $html = @file_get_contents($url);
+		$html = getPageData($url);
 
+		$dom = str_get_html($html);
 
-		@$dom = new DOMDocument;
+		if ($type == 'plugins') {
+			$class = "plugin-download";
+		} else {
+			$class = "theme-install";
+		}
+
+		$anchor = $dom->find(".$class", 0);
+
+		return isset($anchor->href) ? $anchor->href : "N/A";
+
+		/*@$dom = new DOMDocument;
 		@$dom->loadHTML($html);
 		$index = 0;
 		
@@ -342,7 +355,7 @@ class WpSpy{
 
 		    		
 		    }
-		}
+		}*/
 		
 	}
 
