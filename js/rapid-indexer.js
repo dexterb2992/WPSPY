@@ -1,8 +1,24 @@
 jQuery(document).ready(function(){
     var $ = jQuery;
     
+    $.xhrPool = [];
+    $.xhrPool.abortAll = function() {
+        $(this).each(function(i, jqXHR) {   //  cycle through list of recorded connection
+            jqXHR.abort();  //  aborts connection
+            $.xhrPool.splice(i, 1); //  removes from list by index
+        });
+    }
+    $.ajaxSetup({
+        beforeSend: function(jqXHR) { $.xhrPool.push(jqXHR); }, //  annd connection to list
+        complete: function(jqXHR) {
+            var i = $.xhrPool.indexOf(jqXHR);   //  get index for current connection completed
+            if (i > -1) $.xhrPool.splice(i, 1); //  removes from list by index
+        }
+    });
+
 
     $("#form_wpindexer").submit(function(e){
+        $.xhrPool.abortAll();
 
         var domain = $("#wpindexer_url").val();
 
