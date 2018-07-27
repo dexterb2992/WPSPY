@@ -1483,3 +1483,18 @@ select#choose_traffic_graph {
 #openlink_invitation {
   margin-top: 10px;
 }
+
+/* begin rapid indexer */
+.wpindexer_entry a {
+  text-decoration: none;
+}
+
+.wpindexer_entry a.success{
+  color: #5CB85C;
+}
+
+.wpindexer_entry a.error{
+  color: #D9534F;;
+}
+
+/* end rapid indexer */

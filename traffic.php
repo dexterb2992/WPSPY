@@ -9,7 +9,7 @@
 	<div class="wpspy-content">
 		<div class="wpspy-form">
 			<?php 
-				if( isset( $_GET['url'] ) && trim($_GIVEN_URL) != "" ){
+				if( isset( $_GIVEN_URL ) && trim($_GIVEN_URL) != "" ){
 					$site_metrics = get_site_metrics($_GIVEN_URL);
 
 					$exportableData = $site_metrics;
@@ -46,7 +46,7 @@
 								</div>
 								<div id="canvas-holder">
 									<div id="traffic-graph-area">
-										<img id="traffic_graph" src="http://traffic.alexa.com/graph?o=lt&y=t&b=ffffff&n=666666&f=999999&p=4e8cff&h=150&w=340&z=30&c=1&y=t&r=6m&u=<?php echo isset($_GIVEN_URL) ? $_GET['url'] : '';?>">
+										<img id="traffic_graph" src="http://traffic.alexa.com/graph?o=lt&y=t&b=ffffff&n=666666&f=999999&p=4e8cff&h=150&w=340&z=30&c=1&y=t&r=6m&u=<?php echo isset($_GIVEN_URL) ? $_GIVEN_URL : '';?>">
 									</div>
 								</div>
 							</div>

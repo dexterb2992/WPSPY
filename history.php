@@ -95,14 +95,14 @@
 									</div>
 								</div>
 
-								<div class="entry google_count">
+								<!-- <div class="entry google_count">
 									<div class="left">
 										<span class="spy-icon-gplus spy-icon"></span>Google Plus
 									</div>
 									<div class="right">
 										<span id="gplus"></span>
 									</div>
-								</div>
+								</div> -->
 
 								<div class="entry stumbleupon_count">
 									<div class="left">
@@ -122,14 +122,14 @@
 									</div>
 								</div>
 
-								<div class="entry linkedin_count">
+								<!-- <div class="entry linkedin_count">
 									<div class="left">
 										<span class="spy-icon-linkedin spy-icon"></span>LinkedIn
 									</div>
 									<div class="right">
 										<span id="linkedin"></span>
 									</div>
-								</div>
+								</div> -->
 
 								<div class="entry pinterest_count">
 									<div class="left">

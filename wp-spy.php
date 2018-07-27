@@ -52,6 +52,11 @@ function wpspy_admin_menu() {
     );
 
     add_submenu_page(
+      "wpspy-dashboard", "Rapid Indexer", "Rapid Indexer", 0,
+      "wpspy-rapid-indexer", "wpspy_rapid_indexer"
+    );
+
+    add_submenu_page(
       "wpspy-dashboard", "Social Stats", "Social Stats", 0, 
       "wpspy-social-stats", "wpspy_social_stats"
     );
@@ -164,6 +169,12 @@ function wpspy_manage_menu() {
 
   function wpspy_seo_stats(){
     include 'seo-stats.php';
+  }
+
+  function wpspy_rapid_indexer() {
+    wp_register_script( 'rapid_indexer', plugins_url( '/js/rapid-indexer.js', __FILE__ ) );
+    wp_enqueue_script( 'rapid_indexer' );
+    include 'rapid-indexer.php';
   }
 
   function wpspy_social_stats(){

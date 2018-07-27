@@ -23,40 +23,37 @@
 	<div class="logo">
 		<img src="<?php echo plugins_url('/images/spy.png', __FILE__); ?>" draggable="false">
 	</div>
-<?PHP if($page != "wpspy-keycheck") { ?>
+<?PHP if($page != "wpspy-keycheck"): ?>
+<?php 
+	function idlize($str) {
+		return str_replace("-", "_", $str);
+	}
+
+	$routes = array(
+		"site-info" => "Site Info",
+		"page-info" => "Page Info",
+		"seo-stats" => "Seo Stats",
+		"rapid-indexer" => "Indexer",
+		"social-stats" => "Social Stats",
+		"traffic" => "Traffic",
+		"links" => "Links",
+		"graphs" => "Graphs",
+		"tutorials" => "Tutorials",
+		"support" => "Support",
+		"previous-searches" => "History"
+	);
+?>
 	<div class="nav">
-		<div class="nav-menu <?php echo ( $page == 'wpspy-site-info') ? 'selected' : '';?>">
-			<a href="?page=wpspy-site-info<?php echo !empty($_GIVEN_URL) ? '&url='.$_GIVEN_URL : ''; ?>" data-href="?page=wpspy-site-info">Site Info</a>
-		</div>
-		<div class="nav-menu <?php echo ( $page == 'wpspy-page-info') ? 'selected' : '';?>">
-			<a href="?page=wpspy-page-info<?php echo !empty($_GIVEN_URL) ? '&url='.$_GIVEN_URL : ''; ?>" data-href="?page=wpspy-page-info">Page Info</a>
-		</div>
-		<div class="nav-menu <?php echo ( $page == 'wpspy-seo-stats') ? 'selected' : '';?>">
-			<a href="?page=wpspy-seo-stats<?php echo !empty($_GIVEN_URL) ? '&url='.$_GIVEN_URL : ''; ?>" data-href="?page=wpspy-seo-stats" id="nav_seo_stats">SEO Stats</a>
-		</div>
-		<div class="nav-menu <?php echo ( $page == 'wpspy-social-stats') ? 'selected' : '';?>">
-			<a href="?page=wpspy-social-stats<?php echo !empty($_GIVEN_URL) ? '&url='.$_GIVEN_URL : ''; ?>" data-href="?page=wpspy-social-stats">Social Stats</a>
-		</div>
-		<div class="nav-menu <?php echo ( $page == 'wpspy-traffic') ? 'selected' : '';?>">
-			<a href="?page=wpspy-traffic<?php echo !empty($_GIVEN_URL) ? '&url='.$_GIVEN_URL : ''; ?>" data-href="?page=wpspy-traffic">Traffic</a>
-		</div>
-		<div class="nav-menu <?php echo ( $page == 'wpspy-links') ? 'selected' : '';?>">
-			<a href="?page=wpspy-links<?php echo !empty($_GIVEN_URL) ? '&url='.$_GIVEN_URL : ''; ?>" data-href="?page=wpspy-links" id="nav_links">Links</a>
-		</div>
-		<div class="nav-menu <?php echo ( $page == 'wpspy-graphs') ? 'selected' : '';?>">
-			<a href="?page=wpspy-graphs<?php echo !empty($_GIVEN_URL) ? '&url='.$_GIVEN_URL : ''; ?>" data-href="?page=wpspy-graphs">Graphs</a>
-		</div>
-		<div class="nav-menu <?php echo ( $page == 'wpspy-tutorials') ? 'selected' : '';?>">
-			<a href="?page=wpspy-tutorials<?php echo !empty($_GIVEN_URL) ? '&url='.$_GIVEN_URL : ''; ?>" data-href="?page=wpspy-tutorials">Tutorials</a>
-		</div>
-		<div class="nav-menu <?php echo ( $page == 'wpspy-support') ? 'selected' : '';?>">
-			<a href="?page=wpspy-support<?php echo !empty($_GIVEN_URL) ? '&url='.$_GIVEN_URL : ''; ?>" data-href="?page=wpspy-support">Support</a>
-		</div>
-		<div class="nav-menu <?php echo ( $page == 'previous-searches') ? 'selected' : '';?> pull-right">
-			<a href="?page=wpspy-previous-searches<?php echo !empty($_GIVEN_URL) ? '&url='.$_GIVEN_URL : ''; ?>" data-href="?page=wpspy-previous-searches">History</a>
-		</div>
+		<?php foreach($routes as $key => $name): ?>
+			<div class="nav-menu <?php echo ($page == "wpspy-$key") ? 'selected' : '';?> <?php echo $key == 'previous-searches' ? 'pull-right' : ''; ?>">
+				<a href="?page=wpspy-<?php echo $key; echo !empty($_GIVEN_URL) ? '&url='.$_GIVEN_URL : ''; ?>" data-href="?page=wpspy-<?php echo $key; ?>"
+					id="<?php echo idlize($key); ?>">
+					<?php echo $name; ?>
+				</a>
+			</div>
+		<?php endforeach; ?>
 	</div>
-<?PHP  } ?>
+<?PHP  endif; ?>
 </div>
 <div class="hidden">
 	<table id="export_table">

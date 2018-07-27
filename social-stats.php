@@ -125,7 +125,7 @@
 							</div>
 						</div>
 
-						<div class="entry linkedin_count">
+						<!-- <div class="entry linkedin_count">
 							<div class="left">
 								<span class="spy-icon-linkedin spy-icon"></span>LinkedIn
 							</div>
@@ -134,7 +134,7 @@
 									<?php echo isset($socialstats->social_shares->linkedin_count) ? $socialstats->social_shares->linkedin_count : '';?>
 								</span>
 							</div>
-						</div>
+						</div> -->
 
 						<div class="entry pinterest_count">
 							<div class="left">
