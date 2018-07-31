@@ -17,7 +17,7 @@
 					<form target="remember" method="post" target="remember" action="about:blank" id="form_wpindexer">
 						<div class="form-group form-inline">
 							<input	type="text" class="form-control" name="wpindexer_url" id="wpindexer_url" placeholder="www.example.com"/>
-							<input type="submit" class="btn btn-flat btn-info wpindexer_btn wpspy_btn" name="wpindexer_submit" id="wpindexer_submit" value="Go" />
+							<input type="submit" class="wpindexer_btn wpspy_btn" name="wpindexer_submit" id="wpindexer_submit" value="Go" />
 						</div>
 					</form>
 				</div>	
