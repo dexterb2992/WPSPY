@@ -5,16 +5,17 @@ include "data.php";
 include "ajax-functions.php";
 @ini_set('max_execution_time', 300); //300 seconds = 5 minutes
 
+global $wpspy_activity;
+global $wpdb;
+
 $q = $_POST['q'];
 
-global $wpspy_activity;
 
 $wpdb->show_errors = true; // true : show errors in development
 
-global $wpdb;
 $table_name = $wpdb->prefix.'wpspy_activity_log';
 
-$domain = $_POST['url'];
+$domain = isset($_POST['url']) ? $_POST['url'] : '';
 
 $format = 'json';
 
@@ -168,14 +169,21 @@ if ($q == "save_activity") {
 			'pagination' => $olp->getPagination() 
 		)
 	);
-} else if ($q == "get_indexes") {
+
+} else if ($q == "get_indexes") { 					  /* START RAPID INDEXER MODULE */
 	get_indexes($_POST['domain']);
 } else if ($q == "check_url") {
 	if (check_url($_POST['url'])) {
 		echo 'success';
 	} else {
 		echo 'error';
-	}
-}
+	}												 /* END RAPID INDEXER MODULE */
+} else if ($q == "getkeywords"){ 				     /* START KEYWORD RESEARCH MODULE */
+	$keyword = isset($_POST['keyword']) ? $_POST['keyword'] : "";
+	echo getKeywordSuggestions($keyword);
+} else if ($q == "checkdomain"){
+	echo checkDomain($_POST['domain']);				 /* END KEYWORD RESEARCH MODULE */
+} 
+
 
 die;

@@ -34,6 +34,7 @@
 		"page-info" => "Page Info",
 		"seo-stats" => "Seo Stats",
 		"rapid-indexer" => "Indexer",
+		"keyword-research" => "Keyword Research",
 		"social-stats" => "Social Stats",
 		"traffic" => "Traffic",
 		"links" => "Links",

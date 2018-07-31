@@ -26,21 +26,21 @@
 			<div class="wpindexer-results row" style="margin-top: 20px; margin-bottom: 15px;">
 				<div class="col-md-12">
 					<div class="box" style="margin-left: 0;">
-					<div class="title">Results</div>
-					<div class="content">
-						<div class="entry">
-							<div id="wpindexer-results-div">
-								<table class="table table-striped">
-									<thead></thead>
-									<tbody></tbody>
-								</table>
+						<div class="title">Results</div>
+						<div class="content">
+							<div class="entry">
+								<div id="wpindexer-results-div">
+									<table class="table table-striped">
+										<thead></thead>
+										<tbody></tbody>
+									</table>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-
 		<!-- END WP Indexer Dashboard -->
 	</div>
 </div>

@@ -584,7 +584,7 @@
     color: rgba(51,51,51,.5) !important;
   }
 
-  #wpspy_url {
+  #wpspy_url, .wpspy-input {
     width: 204px;
   }
 
@@ -733,7 +733,7 @@
   }
 
   .hidden{
-    display: none;
+    display: none !important;
   }
 
   .show-web-stats {
@@ -1485,16 +1485,132 @@ select#choose_traffic_graph {
 }
 
 /* begin rapid indexer */
-.wpindexer_entry a {
-  text-decoration: none;
-}
+  .wpindexer_entry a {
+    text-decoration: none;
+  }
 
-.wpindexer_entry a.success{
-  color: #5CB85C;
-}
+  .wpindexer_entry a.success{
+    color: #5CB85C;
+  }
 
-.wpindexer_entry a.error{
-  color: #D9534F;;
-}
+  .wpindexer_entry a.error{
+    color: #D9534F;;
+  }
 
 /* end rapid indexer */
+
+
+/* begin keyword research */
+  form#form_wpkm_check_domain, form#form_wpkm {
+    margin-top: 14px;
+  }
+
+  .red{
+    color: #d9534f;
+  }
+
+  .dataTables_wrapper {
+    margin-bottom: 16px;
+  }
+
+  #wpkm_results_count {
+    color: #5cb85c;
+    font-size: 14px;
+    margin-bottom: -20px;
+  }
+
+
+  .wpkm_entry {
+    word-break: break-word;
+  }
+
+
+  .wpkm_entry a.success{
+    color: #5CB85C;
+  }
+
+  .wpkm_entry a.error{
+    color: #D9534F;;
+  }
+
+  .wpkm-results table tr td {
+    min-width: 60px;
+  }
+
+  .wpkm-results div {
+    overflow: hidden;
+  }
+
+
+  tr.info td{
+    background-color: rgb(252, 248, 227);
+  }
+
+  tr.warning td{
+    background-color: rgb(217, 237, 247);
+  }
+
+  table.dataTable tbody tr td {
+    border-bottom: 1px solid #D9EDF7;
+  }
+
+  #tdl_extension {
+    min-width: 78px;
+  }
+
+  #wpkm_results_div {
+    /*margin-top: 26px;*/
+  }
+
+  a.btn {
+    text-decoration: none;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+  }
+
+  .bg-red, .bg-yellow, .bg-aqua, .bg-blue, .bg-light-blue, .bg-green, .bg-navy, .bg-teal, .bg-olive, .bg-lime, .bg-orange, .bg-fuchsia, .bg-purple, .bg-maroon, .bg-black, .bg-red-active, .bg-yellow-active, .bg-aqua-active, .bg-blue-active, .bg-light-blue-active, .bg-green-active, .bg-navy-active, .bg-teal-active, .bg-olive-active, .bg-lime-active, .bg-orange-active, .bg-fuchsia-active, .bg-purple-active, .bg-maroon-active, .bg-black-active, .callout.callout-danger, .callout.callout-warning, .callout.callout-info, .callout.callout-success, .alert-success, .alert-danger, .alert-error, .alert-warning, .alert-info, .label-danger, .label-info, .label-warning, .label-primary, .label-success, .modal-primary .modal-body, .modal-primary .modal-header, .modal-primary .modal-footer, .modal-warning .modal-body, .modal-warning .modal-header, .modal-warning .modal-footer, .modal-info .modal-body, .modal-info .modal-header, .modal-info .modal-footer, .modal-success .modal-body, .modal-success .modal-header, .modal-success .modal-footer, .modal-danger .modal-body, .modal-danger .modal-header, .modal-danger .modal-footer {
+    color: #fff !important;
+  }
+
+  .btn.btn-flat {
+    border-radius: 0;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    border-width: 1px;
+  }
+
+  .bg-orange {
+    background-color: #ff851b !important;
+  }
+
+  .btn-success {
+    color: #fff;
+    background-color: #00a65a;
+    border-color: #008d4c;
+  }
+
+  .bg-purple {
+    background-color: #605ca8 !important;
+  }
+/* end keyword research*/
