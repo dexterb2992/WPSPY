@@ -119,6 +119,7 @@ function wpspy_admin_scripts() {
     wp_register_script( 'script', plugins_url( '/js/script.js', __FILE__ ) );
 
     /* Register style sheet. */
+    wp_register_style('fontawesome', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css');
     wp_register_style( 'jquery.dataTables.min', plugins_url( '/css/jquery.dataTables.min.css', __FILE__ ) );
     wp_register_style( 'jquery-ui', plugins_url( '/css/jquery-ui.css', __FILE__ ) );
     wp_register_style( 'wpspy-style', plugins_url( '/css/style.css', __FILE__ ) );
@@ -141,6 +142,7 @@ function wpspy_admin_scripts() {
 
 
     /* Link our already registered style to a page */
+    wp_enqueue_style('fontawesome');
     wp_enqueue_style( 'jquery.dataTables.min' );
     wp_enqueue_style( 'jquery-ui' );
     wp_enqueue_style( 'wpspy-style' );
