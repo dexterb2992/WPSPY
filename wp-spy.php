@@ -123,7 +123,7 @@ function wpspy_admin_scripts() {
     wp_register_script( 'export', plugins_url( '/js/export.js', __FILE__ ) );
     wp_register_script( 'script', plugins_url( '/js/script.js', __FILE__ ) );
     wp_register_script( 'bootstrapjs', plugins_url( '/assets/bootstrap/js/bootstrap.min.js', __FILE__ ) );
-    wp_register_script( 'admin_lte', plugins_url( '/assets/dist/js/app.js', __FILE__ ) );
+    wp_register_script( 'admin_lte', plugins_url( '/assets/dist/js/app.min.js', __FILE__ ) );
 
     /* Register style sheet. */
     wp_register_style( 'fontawesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css' );
@@ -133,7 +133,7 @@ function wpspy_admin_scripts() {
     wp_register_style( 'wpspy-style', plugins_url( '/css/style.css', __FILE__ ) );
     wp_register_style( 'bootstrap', plugins_url('/assets/bootstrap/css/bootstrap.min.css', __FILE__ ));
     wp_register_style( 'ionicons', plugins_url('/assets/Ionicons/css/ionicons.min.css', __FILE__));
-    wp_register_style( 'admin-lte', plugins_url('/assets/dist/css/AdminLTE.css', __FILE__ ));
+    wp_register_style( 'admin-lte', plugins_url('/assets/dist/css/AdminLTE.min.css', __FILE__ ));
 
     /* Link our already registered script to a page */
     wp_enqueue_script( 'FileSaver' );
