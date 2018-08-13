@@ -45,7 +45,7 @@
 			}
 		?>
 		<div class="wpspy-results row">
-			<div class="col-5">
+			<div class="col-md-5">
 				<div class="on-site box">
 					<div class="title">On-site</div>
 					<div class="content">
@@ -64,7 +64,7 @@
 							<div class="right">
 								<?php 
 									if(isset($_GIVEN_URL)){
-										if( isset($onsite->robot) && $onsite->robot == 'true' || $onsite->robot == '1' ){
+										if( isset($onsite) && (isset($onsite->robot) && $onsite->robot == 'true' || $onsite->robot == '1') ){
 											$data_array["robot"] = $onsite->robot;
 											echo '<span id="robots" class="spy-icon-check spy-icon"></span>';
 										}else{
@@ -83,7 +83,7 @@
 							<div class="right">
 								<?php 
 									if(isset($_GIVEN_URL)){
-										if( isset($onsite->sitemap_index) && $onsite->sitemap_index == 'true' || $onsite->sitemap_index == '1' ){
+										if( isset($onsite) && (isset($onsite->sitemap_index) && $onsite->sitemap_index == 'true' || $onsite->sitemap_index == '1') ){
 											$data_array["sitemap_index"] = $onsite->sitemap_index;
 											echo '<span id="sitemap" class="spy-icon-check spy-icon"></span>';
 										}else{
@@ -185,7 +185,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-5">
+			<div class="col-md-5">
 				<div class="geolocation box">
 					<div class="title">Geolocation</div>
 					<div class="content">

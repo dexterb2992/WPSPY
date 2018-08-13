@@ -27,7 +27,7 @@
 
   .box {
     border: 1px solid rgba(128, 128, 128, 0.43);
-    margin: 14px;
+    /*margin: 14px;*/
     overflow: hidden;
   }
 
@@ -110,7 +110,7 @@
     display: inline-block;
   }
 
-  #export_csv:before{
+  /*#export_csv:before{
     content: "";
     display: block;
     background: url(../images/icons/csv.png) no-repeat !important;
@@ -129,7 +129,7 @@
     height: 25px;
     float: left;
     margin: -8px 6px 0 0;
-  }
+  }*/
 
   .spy-icon-360 {
     background-image: url(../images/icons/360.png) !important;
@@ -519,11 +519,14 @@
   }
 
   span.success {
-    color: rgb(37, 179, 37);
+    /*color: rgb(37, 179, 37);*/
+    font-size: small;
+    color: inherit;
   }
   
   .on-site .entry {
-    max-height: 22px;
+    /*max-height: 22px;*/
+    height: 100%;
     overflow: hidden;
   }
 
@@ -692,7 +695,13 @@
   }
 
   .entry {
-    max-width: 500px;
+    /*max-width: 500px;*/
+    border-radius: 2px;
+    padding: 10px;
+    background: #f4f4f4;
+    margin-bottom: 2px;
+    border-left: 2px solid #e6e7e8;
+    color: #444;
   }
 
   .entry .title {
@@ -903,7 +912,7 @@
     }
   }
 
-  @media (min-width: 300px) {
+ /* @media (min-width: 300px) {
     embed {
       height: 85%;
       width: 85%;
@@ -984,8 +993,8 @@
     .container {
       width: 1170px;
     }
-  }
-.container-fluid {
+  }*/
+/*.container-fluid {
   padding-right: 15px;
   padding-left: 15px;
   margin-right: auto;
@@ -995,7 +1004,7 @@
   margin-right: -15px;
   margin-left: -15px;
   width: 100%;
-}
+}*/
 
 /* Columns */
   .col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12 {
@@ -1015,13 +1024,13 @@
   .col-11 { width: 93%; }
   .col-12 { width: 100%; }
   
-.table>tbody>tr>td{
+/*.table>tbody>tr>td{
   padding: 8px;
   line-height: 1.42857143;
   vertical-align: top;
   border-top: 1px solid #ddd;
 }
-
+*/
 table.rank-in-country {
   font-size: 14px;
 }
@@ -1614,3 +1623,9 @@ select#choose_traffic_graph {
     background-color: #605ca8 !important;
   }
 /* end keyword research*/
+
+
+/* adminLTE */
+.connectedSortable {
+    min-height: 150px !important;
+}

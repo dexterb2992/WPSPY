@@ -31,8 +31,8 @@
 						</table>
 					</div>
 					<!-- Modal -->
-					<div id="dialog" class="hidden"></div>
-					<div id="history_data" class="hidden">
+					<div id="dialog" style="display: none;"></div>
+					<div id="history_data" style="display: none;">
 						<div class="dns box">
 							<div class="title">Domain Info</div>
 							<div class="content"></div>
@@ -58,7 +58,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="hidden">
+					<div style="display: none;">
 						<div class="box" id="div_page_info_history">
 							<table id="page_info_history" class="table tbl-page-info">
 								<thead>

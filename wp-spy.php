@@ -32,7 +32,9 @@ function wpspy_admin_menu() {
       __( 'WP Spy Pro', $pageSpyUrl ),                    // The screen title
       'manage_options',                                     // The capability required for access to this menu
       $pageSpyUrl,                                    // The slug to use in the URL of the screen
-      'wpspy_manage_menu'                                   // The function to call to display the screen
+      'wpspy_manage_menu',                                 // The function to call to display the screen
+      '',
+      4
   );
 
   /* Add our submenus */
@@ -109,7 +111,10 @@ function wpspy_admin_scripts() {
     wp_register_script( 'from_html', plugins_url( '/js/from_html.js', __FILE__ ) );
     wp_register_script( 'split_text_to_size', plugins_url( '/js/split_text_to_size.js', __FILE__ ) );
     wp_register_script( 'standard_fonts_metrics', plugins_url( '/js/standard_fonts_metrics.js', __FILE__ ) );
+    
     wp_register_script( 'jquery-ui.min', plugins_url( '/js/jquery-ui.min.js', __FILE__ ) );
+    wp_register_script( 'jquery-ui-cdn', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js');
+
     wp_register_script( 'jquery.dataTables.min', plugins_url( '/js/jquery.dataTables.min.js', __FILE__ ) );
     wp_register_script( 'fusioncharts', plugins_url( '/js/fusioncharts.js', __FILE__ ) );
     wp_register_script( 'fusioncharts.theme.zune', plugins_url( '/js/fusioncharts.theme.zune.js', __FILE__ ) );
@@ -117,12 +122,18 @@ function wpspy_admin_scripts() {
     wp_register_script( 'jquery.timeago', plugins_url( '/js/jquery.timeago.js', __FILE__ ) );
     wp_register_script( 'export', plugins_url( '/js/export.js', __FILE__ ) );
     wp_register_script( 'script', plugins_url( '/js/script.js', __FILE__ ) );
+    wp_register_script( 'bootstrapjs', plugins_url( '/assets/bootstrap/js/bootstrap.min.js', __FILE__ ) );
+    wp_register_script( 'admin_lte', plugins_url( '/assets/dist/js/app.js', __FILE__ ) );
 
     /* Register style sheet. */
-    wp_register_style('fontawesome', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css');
+    wp_register_style( 'fontawesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css' );
     wp_register_style( 'jquery.dataTables.min', plugins_url( '/css/jquery.dataTables.min.css', __FILE__ ) );
     wp_register_style( 'jquery-ui', plugins_url( '/css/jquery-ui.css', __FILE__ ) );
+    wp_register_style( 'jquery-ui-css-cdn', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css');
     wp_register_style( 'wpspy-style', plugins_url( '/css/style.css', __FILE__ ) );
+    wp_register_style( 'bootstrap', plugins_url('/assets/bootstrap/css/bootstrap.min.css', __FILE__ ));
+    wp_register_style( 'ionicons', plugins_url('/assets/Ionicons/css/ionicons.min.css', __FILE__));
+    wp_register_style( 'admin-lte', plugins_url('/assets/dist/css/AdminLTE.css', __FILE__ ));
 
     /* Link our already registered script to a page */
     wp_enqueue_script( 'FileSaver' );
@@ -132,6 +143,7 @@ function wpspy_admin_scripts() {
     wp_enqueue_script( 'standard_fonts_metrics' );
     wp_enqueue_script( 'from_html' );
     wp_enqueue_script( 'jquery-ui.min' );
+    wp_enqueue_script( 'jquery-ui-cdn' );
     wp_enqueue_script( 'fusioncharts' );
     wp_enqueue_script( 'fusioncharts.theme.zune' );
     wp_enqueue_script( 'fusioncharts.powercharts' );
@@ -139,13 +151,19 @@ function wpspy_admin_scripts() {
     wp_enqueue_script( 'jquery.dataTables.min' );
     wp_enqueue_script( 'script' );
     wp_enqueue_script( 'export' );
+    wp_enqueue_script( 'bootstrapjs' );
+    wp_enqueue_script( 'admin_lte' );
 
 
     /* Link our already registered style to a page */
     wp_enqueue_style('fontawesome');
     wp_enqueue_style( 'jquery.dataTables.min' );
     wp_enqueue_style( 'jquery-ui' );
+    wp_enqueue_style( 'jquery-ui-css-cdn' );
     wp_enqueue_style( 'wpspy-style' );
+    wp_enqueue_style( 'bootstrap' );
+    wp_enqueue_style( 'ionicons' );
+    wp_enqueue_style( 'admin-lte' );
 
 
 

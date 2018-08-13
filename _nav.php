@@ -17,16 +17,10 @@
 		);
 	}
 
-	
-?>
-<div class="wpspy-head">
-	<div class="logo">
-		<img src="<?php echo plugins_url('/images/spy.png', __FILE__); ?>" draggable="false">
-	</div>
-<?PHP if($page != "wpspy-keycheck"): ?>
-<?php 
-	function idlize($str) {
-		return str_replace("-", "_", $str);
+	if (!function_exists('idlize')) {
+		function idlize($str) {
+			return str_replace("-", "_", $str);
+		}
 	}
 
 	$routes = array(
@@ -44,18 +38,19 @@
 		"previous-searches" => "History"
 	);
 ?>
-	<div class="nav">
-		<?php foreach($routes as $key => $name): ?>
-			<div class="nav-menu <?php echo ($page == "wpspy-$key") ? 'selected' : '';?> <?php echo $key == 'previous-searches' ? 'pull-right' : ''; ?>">
-				<a href="?page=wpspy-<?php echo $key; echo !empty($_GIVEN_URL) ? '&url='.$_GIVEN_URL : ''; ?>" data-href="?page=wpspy-<?php echo $key; ?>"
-					id="<?php echo idlize($key); ?>">
-					<?php echo $name; ?>
-				</a>
-			</div>
-		<?php endforeach; ?>
-	</div>
-<?PHP  endif; ?>
-</div>
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Dashboard
+        <small>Control panel</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Dashboard</li>
+    </ol>
+</section>
+
 <div class="hidden">
 	<table id="export_table">
 		<thead>
