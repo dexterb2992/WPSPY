@@ -1566,6 +1566,7 @@ select#choose_traffic_graph {
 
   #tdl_extension {
     min-width: 78px;
+    height: 34px;
   }
 
   #wpkm_results_div {

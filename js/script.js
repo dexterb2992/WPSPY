@@ -68,7 +68,7 @@ $(document).ready(function() {
 	setTimeout(function() {}, 10);
 
 	function onLoadingState(classSelector) {
-		$(classSelector+' .box-title').append('<span class="success thin"> (<i class="fa fa-refresh fa-spin"></i> Loading data...)</span>');
+		$(classSelector+' .box-title').append('<span class="success thin"> (<i class="fa fa-spinner fa-spin"></i> Loading data...)</span>');
 		$(classSelector+' button[data-widget="collapse"]').click();
 		console.log(classSelector+" onLoadingState");
 	}
@@ -1243,7 +1243,7 @@ $(document).ready(function() {
 								beforeSend : function() {
 									$('div.social-sns .entry .right').html('');
 									$(".site-metrics .entry .right").html("");
-									$('.social-sns .title, .social-metrics .box-title').append('<span class="success thin"> (<i class="fa fa-refresh fa-spin"></i> Loading data...)</span>');
+									$('.social-sns .title, .social-metrics .box-title').append('<span class="success thin"> (<i class="fa fa-spinner fa-spin"></i> Loading data...)</span>');
 									$('.social-sns button[data-widget="collapse"]').trigger('click');
 								}
 							}).done(function (data) {

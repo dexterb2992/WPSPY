@@ -10,7 +10,7 @@ jQuery(document).ready(function(){
     $("#form_wpkm").submit(function(){
         
         var keyword = $("#wpkm_keyword").val();
-        disableButton($("#wpkm_submit"), "Please wait...");
+        disableButton($("#wpkm_submit"), "<i class='fa fa-spinner fa-spin'></i> Please wait...");
 
         $.ajax({
             url: ajaxurl,
@@ -22,7 +22,7 @@ jQuery(document).ready(function(){
             },
             dataType: 'json',
             beforeSend: function (){
-                disableButton($("#wpkm_submit"), "Please wait...");
+                disableButton($("#wpkm_submit"), "<i class='fa fa-spinner fa-spin'></i> Please wait...");
             }, 
             success: function (json){
                 if (json !== null && typeof(json) == 'object' && json != "" && json.hasOwnProperty('count')) {
@@ -117,7 +117,7 @@ jQuery(document).ready(function(){
 
     $("#wpkm_check_availability").click(function(){
         if( $("#generate_domains").html() !== "" ){
-            disableButton($(this), "Please wait...");
+            disableButton($(this), "<i class='fa fa-spinner fa-spin'></i> Please wait...");
             var table = $('#generate_domains').DataTable();
      
             var data = table.rows().data();
@@ -187,7 +187,7 @@ jQuery(document).ready(function(){
 
     $("#wpkm_create_domains").click( function(){
     
-        disableButton($("#wpkm_create_domains"), "Please wait...");
+        disableButton($("#wpkm_create_domains"), "<i class='fa fa-spinner fa-spin'></i> Please wait...");
 
         $("#table_domains").html("");
         $("#table_domains").html('<table id="generate_domains"></table>');
@@ -274,13 +274,13 @@ jQuery(document).ready(function(){
     function enableButton(btn, text){
         btn.removeClass("disabled");
         btn.removeAttr("disabled", "disabled");
-        btn.val(text);
+        btn.html(text);
     }
 
     function disableButton(btn, text){
         btn.addClass("disabled");
         btn.attr("disabled", "disabled");
-        btn.val(text);
+        btn.html(text);
     }
 
 

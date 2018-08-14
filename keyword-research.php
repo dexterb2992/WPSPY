@@ -1,32 +1,31 @@
-<div class="wpspy-wrapper">
-	<?php 
-		$page = 'wpspy-keyword-research';
-		include plugin_dir_path( __FILE__ )."classes/config.php";
-		include plugin_dir_path( __FILE__ )."classes/dbhelper.php";
-		include plugin_dir_path( __FILE__ )."_nav.php"; 
-		include plugin_dir_path(__FILE__)."classes/data.php";
-	?>
+<?php 
+	$page = 'wpspy-keyword-research';
+	include plugin_dir_path( __FILE__ )."classes/config.php";
+	include plugin_dir_path( __FILE__ )."classes/dbhelper.php";
+	include plugin_dir_path(__FILE__)."classes/data.php";
+?>
 
-	<div class="wpspy-content">
-		<!-- START WP Keyword Master Dashboard -->
-		<div class="container">
-
-			<div class="wpindexer-form wpspy-results row">
-				<div class="col-6">
+<div class="wrapper">
+    <!-- Content Wrapper. Contains page content -->
+    <div>
+        <?php include "_nav.php"; ?>
+        <section class="content">
+        	<div class="row">
+				<div class="col-md-6">
 					<div class="wpspy-form">
 						<iframe id="remember" name="remember" class="hidden" src="about:blank"></iframe>
 						<form target="remember" method="post" action="about:blank" id="form_wpkm">
 							
 							<div class="form-group form-inline">
 								<input class="form-control wpspy-input" type="text" name="wpkm_keyword" id="wpkm_keyword" placeholder="Enter keyword"/>
-								<input type="submit" class="wpspy_btn" name="wpkm_submit" id="wpkm_submit" value="Go" />
+								<button type="submit" class="btn btn-info" name="wpkm_submit" id="wpkm_submit">Go</button>
 							</div>
 							<div id="wpkm_results_count"></div>
 						</form>
 					</div>
 				</div>
 
-				<div class="col-6">
+				<div class="col-md-6">
 					<div class="wpspy-form">
 						<iframe id="remember2" name="remember2" class="hidden" src="about:blank"></iframe>
 						<form target="remember2" method="post" action="about:blank" id="form_wpkm_check_domain">
@@ -40,55 +39,73 @@
 									<option value=".info">.info</option>
 								</select>
 
-								<input type="submit" class="wpspy_btn" name="wpkm_create_domains" id="wpkm_create_domains" value="Create Domains" />
-								<input type="button" class="wpspy_btn" name="wpkm_check_availability" id="wpkm_check_availability" value="Check Availability" />
+								<input type="submit" class="btn btn-warning" name="wpkm_create_domains" id="wpkm_create_domains" value="Create Domains" />
+								<button type="button" class="btn btn-success" name="wpkm_check_availability" id="wpkm_check_availability">
+									Check Availability
+								</button>
 							</div>
 						</form>
 					</div>
 				</div>
 			</div>
 
-			<div class="wpindexer-form wpspy-results row">
-				<div class="col-6">
-					<div class="box" style="margin-left: 0;">
-						<div class="title">Results</div>
-						<div class="content">
-							<div class="entry">
-								<div id="wpkm_results_div"></div>
-								<div class="export">
-									<div id="exportable_table" style="display:none;"></div>
-								</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="box box-solid bg-aqua-gradient page-info">
+                        <div class="box-header">
+                            <i class="fa fa-search"></i>
+                            <h3 class="box-title">Results</h3>
+                            <!-- tools box -->
+                            <div class="pull-right box-tools">
+                                <button type="button" class="btn btn-info btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
+                                </button>
+                            </div>
+                            <!-- /. tools -->
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body no-padding">
+                        </div>
+                        <!-- /.box-body -->
+                        <div class="box-footer text-black">
+                            <div id="wpkm_results_div"></div>
+							<div class="export">
+								<div id="exportable_table" style="display:none;"></div>
 							</div>
-						</div>
-					</div>
-					
+                        </div>
+                    </div>
 				</div>
-				<div class="col-6" id="div_generate_domains">
-					<div class="wpkm-form">
 
-						<div id="wpkm_results_div">
-							<div class="box" style="margin-left: 0;">
-								<div class="title">Results</div>
-								<div class="content">
-									<div class="entry">
-										<div id="table_domains">
-											<table id="generate_domains"></table>
-										</div>
-										<div class="export">
-											<a href="javascript:void(0)" id="export_domains" class="hidden btn bg-purple btn-flat">
-												<i class="fa fa-paste"></i> Export
-											</a>
-										</div>
-									</div>
-								</div>
+				<div class="col-md-6" id="div_generate_domains">
+					<div class="box box-solid bg-purple-gradient page-info">
+                        <div class="box-header">
+                            <i class="fa fa-recycle"></i>
+                            <h3 class="box-title">Results</h3>
+                            <!-- tools box -->
+                            <div class="pull-right box-tools">
+                                <button type="button" class="btn bg-purple btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
+                                </button>
+                            </div>
+                            <!-- /. tools -->
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body no-padding">
+                        </div>
+                        <!-- /.box-body -->
+                        <div class="box-footer text-black">
+                            <div id="table_domains">
+								<table id="generate_domains" class="table table-bordered"></table>
 							</div>
-						</div>
-					</div>
+							<div class="export">
+								<a href="javascript:void(0)" id="export_domains" class="hidden btn bg-purple btn-flat">
+									<i class="fa fa-paste"></i> Export
+								</a>
+							</div>
+                        </div>
+                    </div>
 
 					<div id="exportable_table" style="display:none;"></div>
 				</div>
 			</div>
-		</div>
-		<!-- END WP Keyword Master Dashboard -->
-	</div>
+        </section>
+    </div>
 </div>

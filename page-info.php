@@ -86,7 +86,7 @@
                         <div class="box-footer text-black">
                             <div class="row">
                                 <div class="col-md-12">
-                                	<table class="table tbl-page-info">
+                                	<table class="table table-striped table-bordered tbl-page-info">
 										<thead>
 											<tr>
 												<th>Tag</th>
