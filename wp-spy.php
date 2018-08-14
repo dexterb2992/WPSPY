@@ -85,7 +85,7 @@ function wpspy_admin_menu() {
   );
 
   add_submenu_page(
-      "wpspy-dashboard", "Previous Searches", "Previous Searches", 0, 
+      "wpspy-dashboard", "History", "History", 0, 
       "wpspy-previous-searches", "wpspy_previous_searches"
   );
 

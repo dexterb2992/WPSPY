@@ -42,12 +42,14 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Dashboard
+        <?php echo $routes[str_replace("wpspy-", "", $page)]; ?>
         <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Dashboard</li>
+        <li><a href="?page=wpspy-dashboard"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">
+        	<?php echo $routes[str_replace("wpspy-", "", $page)]; ?>
+        </li>
     </ol>
 </section>
 

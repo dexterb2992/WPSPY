@@ -698,10 +698,11 @@
     /*max-width: 500px;*/
     border-radius: 2px;
     padding: 10px;
-    background: #f4f4f4;
+    background: #f4f4f42e;
     margin-bottom: 2px;
     border-left: 2px solid #e6e7e8;
     color: #444;
+    border-bottom: 1px solid #e6e7e8;
   }
 
   .entry .title {

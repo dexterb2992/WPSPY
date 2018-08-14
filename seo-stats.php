@@ -111,10 +111,10 @@
             </div>
             <div class="row">
                 <div class="col-lg-3 col-xs-6">
-                    <div class="small-box bg-green">
+                    <div class="small-box bg-aqua">
                         <div class="inner">
                             <h3 id="alexa_rank">
-                                <?php echo isset($seostats["rank"]->alexa_traffic_rank) ? $seostats["rank"]->alexa_traffic_rank : 'N/A'; ?>
+                                <?php echo isset($seostats["rank"]->alexa_traffic_rank) ? $seostats["rank"]->alexa_traffic_rank : '-'; ?>
                             </h3>
                             <p>Alexa Traffic Rank</p>
                         </div>

@@ -83,6 +83,43 @@ $(document).ready(function() {
 		console.log(classSelector+" removeLoadingState");
 	}
 
+	function extractHostname(url) {
+	    var hostname;
+	    //find & remove protocol (http, ftp, etc.) and get hostname
+
+	    if (url.indexOf("//") > -1) {
+	        hostname = url.split('/')[2];
+	    }
+	    else {
+	        hostname = url.split('/')[0];
+	    }
+
+	    //find & remove port number
+	    hostname = hostname.split(':')[0];
+	    //find & remove "?"
+	    hostname = hostname.split('?')[0];
+
+	    return hostname;
+	}
+
+	function extractRootDomain(url) {
+	    var domain = extractHostname(url),
+	        splitArr = domain.split('.'),
+	        arrLen = splitArr.length;
+
+	    //extracting the root domain here
+	    //if there is a subdomain 
+	    if (arrLen > 2) {
+	        domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1];
+	        //check to see if it's using a Country Code Top Level Domain (ccTLD) (i.e. ".me.uk")
+	        if (splitArr[arrLen - 2].length == 2 && splitArr[arrLen - 1].length == 2) {
+	            //this is using a ccTLD
+	            domain = splitArr[arrLen - 3] + '.' + domain;
+	        }
+	    }
+	    return domain;
+	}
+
 
 	// # of attempts when getting the social mention data
 		var social_mention_attempts = 0; 
@@ -169,7 +206,7 @@ $(document).ready(function() {
 
 					$("#builtwith").attr("href", "//builtwith.com/"+domain);
 					$("#source_code").attr("href", "view-source:"+domain_raw);
-					$("#whois_lookup").attr("href", "//who.is/whois/"+domain_raw);
+					$("#whois_lookup").attr("href", "//who.is/whois/"+extractHostname(domain_raw));
 					$("#mcafee").attr("href", "//www.siteadvisor.com/sites/"+domain_raw);
 					$("#norton").attr("href", "//safeweb.norton.com/report/show?url="+domain_raw);
 					$("#wot").attr('href', "//www.mywot.com/en/scorecard/"+domain_raw);
@@ -188,9 +225,9 @@ $(document).ready(function() {
 						console.log(typeof(data));
 
 						// verify if there a cached data
-							if ((data !== false) && (data.ip === "N/A")) {
-								data = false;
-							}
+						if ((data !== false) && (data.ip === "N/A")) {
+							data = false;
+						}
 
 						if (data ===  false) {
 							// set the progress limit 
@@ -207,90 +244,106 @@ $(document).ready(function() {
 									url : ajaxurl,
 									type : 'post',
 									data : { action: 'wpspy_ajax', q : 'get_onsite', url : domain_raw },
-									dataType : 'json'
-								}).done(function (data) {
-									// update progress 
+									dataType : 'json',
+									beforeSend: function () {
+										onLoadingState(".on-site");
+									},
+									success: function (data) {
+										// update progress 
 										progress_current++;
 									
-									console.log(data);
-									exportableData.on_site = data;
-									$("#robots, #sitemap").removeClass("spy-icon-eye").removeClass("spy-icon").html("");
+										console.log(data);
+										exportableData.on_site = data;
+										$("#robots, #sitemap").removeClass("spy-icon-eye").removeClass("spy-icon").html("");
 
-									if (data.robot === true  || data.robot === "true" || data.robot === "1") {
-										$("#robots").addClass("spy-icon");
-										$("#robots").addClass("spy-icon-check").html("");
-									} else {
-										$("#robots").removeClass("spy-icon-check").html("N/A");
+										if (data.robot === true  || data.robot === "true" || data.robot === "1") {
+											$("#robots").addClass("spy-icon");
+											$("#robots").addClass("spy-icon-check").html("");
+										} else {
+											$("#robots").removeClass("spy-icon-check").html("N/A");
+										}
+										
+										if (data.sitemap_index === true || data.sitemap_index === "true" || data.sitemap_index === "1") {
+											$("#sitemap").addClass("spy-icon");
+											$("#sitemap").addClass("spy-icon-check").html("");
+										} else {
+											$("#sitemap").removeClass("spy-icon-check").html("N/A");
+										}
+										data_array.robot = (data.robot);
+										data_array.sitemap_index = (data.sitemap_index);
+										check_progress_and_save(progress_limit, progress_current, data_array);
+									},
+									error: function (data) {
+										console.warn(data);
+									},
+									complete: function () {
+										removeLoadingState(".on-site");
 									}
-									
-									if (data.sitemap_index === true || data.sitemap_index === "true" || data.sitemap_index === "1") {
-										$("#sitemap").addClass("spy-icon");
-										$("#sitemap").addClass("spy-icon-check").html("");
-									} else {
-										$("#sitemap").removeClass("spy-icon-check").html("N/A");
-									}
-									data_array.robot = (data.robot);
-									data_array.sitemap_index = (data.sitemap_index);
-									check_progress_and_save(progress_limit, progress_current, data_array);
 								});
 								
 								$.ajax({
 									url : ajaxurl,
 									type : 'post',
 									data : { action: 'wpspy_ajax', q : 'get_whois', url : domain_raw },
-									dataType : 'json'
-								}).done(function (data) {
-									console.log(data);
+									dataType : 'json',
+									beforeSend: function () {
+										onLoadingState(".domain-info");
+									},
+									success: function (data) {
+										console.log(data);
+										// update current progress
+											progress_current++;
+											
+										if (data !== null && typeof(data) !== null) {
+											// append to html body
+												if (typeof(data.link) !== 'undefined' && typeof(data.link) !== null) {
+													$("#whois_lookup").attr("href", extractRootDomain(data.link));
+												}
+												$("div.domain-info .dns").html("");
+												$.each(data.dns, function (i, row) {
+													$("div.domain-info .dns").append(
+														'<div class="entry">'+
+															'<div class="left">'+
+																'<span class="spy-icon spy-icon-dns"></span>DNS '+(i+1)+
+															'</div>'+
+															'<div class="right">'+
+																'<span>'+row+'</span>'+
+															'</div>'+
+														'</div>'
+													);
+												});
+												$("#ip").html(data.geolocation.ip);
+												$("#country").html("<span class='flag flag-"+data.geolocation.country_code+"'></span><span>"+data.geolocation.country+"</span>");
+												$("#city").html(data.geolocation.city);
 
-									// update current progress
-										progress_current++;
-										
-									if (data !== null && typeof(data) !== null) {
-										// append to html body
-											if (typeof(data.link) !== 'undefined' && typeof(data.link) !== null) {
-												$("#whois_lookup").attr("href", data.link);
-											}
-											$("div.domain-info div.content div.dns").html("");
-											$.each(data.dns, function (i, row) {
-												$("div.domain-info div.content div.dns").append(
-													'<div class="entry">'+
-														'<div class="left">'+
-															'<span class="spy-icon spy-icon-dns"></span>DNS '+(i+1)+
-														'</div>'+
-														'<div class="right">'+
-															'<span>'+row+'</span>'+
-														'</div>'+
-													'</div>'
-												);
-											});
-											$("#ip").html(data.geolocation.ip);
-											$("#country").html("<span class='flag flag-"+data.geolocation.country_code+"'></span><span>"+data.geolocation.country+"</span>");
-											$("#city").html(data.geolocation.city);
+												var dns = (data.dns);
+												console.log(dns);
 
-											var dns = (data.dns);
-											console.log(dns);
+											data_array.ip = (data.geolocation.ip);
+											data_array.country = (data.geolocation.country);
+											data_array.country_code = (data.geolocation.country_code);
+											data_array.city = (data.geolocation.city);
+											data_array.dns = JSON.stringify(dns);
 
-										data_array.ip = (data.geolocation.ip);
-										data_array.country = (data.geolocation.country);
-										data_array.country_code = (data.geolocation.country_code);
-										data_array.city = (data.geolocation.city);
-										data_array.dns = JSON.stringify(dns);
+											exportableData.geolocation = data.geolocation;
+											exportableData.dns = dns;
 
-										exportableData.geolocation = data.geolocation;
-										exportableData.dns = dns;
-
-										check_progress_and_save(progress_limit, progress_current, data_array);
-									}
-									
-								}).fail(function (data) {
-									console.log("error:");
-									console.log(data);
-									// here we enable the submit button again
-										enable_button(btn, "Go");
-									// update current progress
+											check_progress_and_save(progress_limit, progress_current, data_array);
+										}
+									},
+									error: function (data) {
+										console.log("error:");
+										console.log(data);
+										// here we enable the submit button again
+											enable_button(btn, "Go");
+										// update current progress
 											progress_current++;
 											check_progress_and_save(progress_limit, progress_current, data_array);
-									fetching_failure($('.geolocation'), 'WHOIS Data');
+										fetching_failure($('.geolocation'), 'WHOIS Data');
+									},
+									complete: function () {
+										removeLoadingState(".domain-info");
+									}
 								});
 
 								// get wordpress data
@@ -298,37 +351,61 @@ $(document).ready(function() {
 										url : ajaxurl,
 										type : 'post',
 										data : { action: 'wpspy_ajax', q : 'get_wordpress_data', url : domain_raw },
-										dataType : 'json'
-									}).done(function (data) {
-										data_array.wordpress_data = JSON.stringify(data);
-										data_array.action = 'wpspy_ajax';
+										dataType : 'json',
+										beforeSend: function () {
+											onLoadingState(".wordpress-data");
+										},
+										success: function (data) {
+											data_array.wordpress_data = JSON.stringify(data);
+											data_array.action = 'wpspy_ajax';
 
-										// update current progress
-											progress_current++;
-											check_progress_and_save(progress_limit, progress_current, data_array);
+											// update current progress
+												progress_current++;
+												check_progress_and_save(progress_limit, progress_current, data_array);
 
-										// save to database
-											$.ajax({
-												url : ajaxurl,
-												type : 'post',
-												dataType : 'json',
-												data : data_array
-											}).done(function (data) {
-												console.log(data);
-											});
+											// save to database
+												$.ajax({
+													url : ajaxurl,
+													type : 'post',
+													dataType : 'json',
+													data : data_array
+												}).done(function (data) {
+													console.log(data);
+												});
 
-										// here we enable the submit button again
-											enable_button(btn, "Go");
+											// here we enable the submit button again
+												enable_button(btn, "Go");
 
-										// Check if it's a wordpress site
-										if ((typeof(data.version) !== 'undefined') && (typeof(data.version) !== null)) {
-											exportableData.wordpress_data = data;
-											
-											$("#wordpress_version").html(data.version);
-											$("div.wordpress-data div.plugins, div.wordpress-data div.theme").html("");
-											if (data.free_plugins !== 0) {
-												// extract free plugins
-													$.each(data.free_plugins, function (i, row) {
+											// Check if it's a wordpress site
+											if ((typeof(data.version) !== 'undefined') && (typeof(data.version) !== null)) {
+												exportableData.wordpress_data = data;
+												
+												$("#wordpress_version").html(data.version);
+												$("div.wordpress-data div.plugins, div.wordpress-data div.theme").html("");
+												if (data.free_plugins !== 0) {
+													// extract free plugins
+														$.each(data.free_plugins, function (i, row) {
+															var name = capitalizeSlug(row.name);
+															console.log(name);
+															var download = ($.trim(row.download) !== "N/A") ? '<a href="'+row.download+'" class="spy-icon spy-icon-download"></a>' : '';
+															var link = ($.trim(row.link) !== "N/A") ? '<a href="'+$.trim(row.link)+'" target="_blank" class="spy-icon spy-icon-eye"></a>' : '<a href="//google.com/search?q=wordpress%20'+row.name+'" target="_blank" class="spy-icon spy-icon-eye"></a>';
+															$("div.wordpress-data div.plugins").append(
+																'<div class="entry">'+
+																	'<div class="left">'+
+																		name+
+																	'</div>'+
+																	'<div class="right">'+
+																		download+
+																		link+
+																		'<span class="spy-icon spy-icon-plugin"></span>'+
+																	'</div>'+
+																'</div>');
+														});
+												}
+
+												if (data.commercial_plugins !== 0) {
+													// extract commercial plugins
+													$.each(data.commercial_plugins, function (i, row) {
 														var name = capitalizeSlug(row.name);
 														console.log(name);
 														var download = ($.trim(row.download) !== "N/A") ? '<a href="'+row.download+'" class="spy-icon spy-icon-download"></a>' : '';
@@ -345,55 +422,39 @@ $(document).ready(function() {
 																'</div>'+
 															'</div>');
 													});
-											}
+												}
 
-											if (data.commercial_plugins !== 0) {
-												// extract commercial plugins
-												$.each(data.commercial_plugins, function (i, row) {
-													var name = capitalizeSlug(row.name);
-													console.log(name);
-													var download = ($.trim(row.download) !== "N/A") ? '<a href="'+row.download+'" class="spy-icon spy-icon-download"></a>' : '';
-													var link = ($.trim(row.link) !== "N/A") ? '<a href="'+$.trim(row.link)+'" target="_blank" class="spy-icon spy-icon-eye"></a>' : '<a href="//google.com/search?q=wordpress%20'+row.name+'" target="_blank" class="spy-icon spy-icon-eye"></a>';
-													$("div.wordpress-data div.plugins").append(
-														'<div class="entry">'+
-															'<div class="left">'+
-																name+
-															'</div>'+
-															'<div class="right">'+
-																download+
-																link+
-																'<span class="spy-icon spy-icon-plugin"></span>'+
-															'</div>'+
-														'</div>');
-												});
-											}
+												var t_download = ($.trim(data.theme.link) !== "N/A") ? '<a href="'+$.trim(data.theme.download)+'" target="_blank" class="spy-icon spy-icon-download"></a>' : '';
+												var t_link = ($.trim(data.theme.link) !== "N/A") ? '<a href="'+$.trim(data.theme.link)+'" target="_blank" class="spy-icon spy-icon-eye"></a>' : '<a href="//google.com/search?q=wordpress%20'+data.theme.name+'" target="_blank" class="spy-icon spy-icon-eye"></a>';
+												
+												if (data.theme.name !== "" && data.theme.name !== "null" && data.theme.name !== null) {
+													$("div.wordpress-data div.theme").html('<div class="entry">'+
+														'<div class="left">'+data.theme.name+'</div>'+
+														'<div class="right">'+
+															t_download+
+															t_link+
+															'<span class="spy-icon spy-icon-theme"></span>'+
+														'</div>'+
+													'</div>');
+												}
 
-											var t_download = ($.trim(data.theme.link) !== "N/A") ? '<a href="'+$.trim(data.theme.download)+'" target="_blank" class="spy-icon spy-icon-download"></a>' : '';
-											var t_link = ($.trim(data.theme.link) !== "N/A") ? '<a href="'+$.trim(data.theme.link)+'" target="_blank" class="spy-icon spy-icon-eye"></a>' : '<a href="//google.com/search?q=wordpress%20'+data.theme.name+'" target="_blank" class="spy-icon spy-icon-eye"></a>';
-											
-											if (data.theme.name !== "" && data.theme.name !== "null" && data.theme.name !== null) {
-												$("div.wordpress-data div.theme").html('<div class="entry">'+
-													'<div class="left">'+data.theme.name+'</div>'+
-													'<div class="right">'+
-														t_download+
-														t_link+
-														'<span class="spy-icon spy-icon-theme"></span>'+
-													'</div>'+
-												'</div>');
 											}
+										},
+										error: function (data) {
+											console.log("error:");
+											console.log(data.responseText);
+											// here we enable the submit button again
+												enable_button(btn, "Go");
 
+											// update current progress
+												progress_current++;
+												check_progress(progress_limit, progress_current);
+
+											fetching_failure($('.wordpress-data'), 'WordPress Data');
+										},
+										complete: function () {
+											removeLoadingState(".wordpress-data");
 										}
-									}).fail(function (data) {
-										console.log("error:");
-										console.log(data.responseText);
-										// here we enable the submit button again
-											enable_button(btn, "Go");
-
-										// update current progress
-											progress_current++;
-											check_progress(progress_limit, progress_current);
-
-										fetching_failure($('.wordpress-data'), 'WordPress Data');
 									});
 						} else {
 							progress_limit = 1;
@@ -417,11 +478,11 @@ $(document).ready(function() {
 
 
 							// dns
-							$("div.domain-info div.content div.dns").html("");
+							$("div.domain-info div.dns").html("");
 							var dns =  String(data.dns).replace(/\\/g, "");
 							dns = $.parseJSON(dns);
 								$.each(dns, function (i, row) {
-									$("div.domain-info div.content div.dns").append(
+									$("div.domain-info div.dns").append(
 										'<div class="entry">'+
 											'<div class="left">'+
 												'<span class="spy-icon spy-icon-dns"></span>DNS '+(i+1)+
@@ -503,291 +564,314 @@ $(document).ready(function() {
 							url : ajaxurl,
 							type : 'post',
 							dataType : 'json',
-							data : { action: 'wpspy_ajax', option : 'page_info', url : domain_raw, q : 'check_status' }
-						}).done(function (data) {
+							data : { action: 'wpspy_ajax', option : 'page_info', url : domain_raw, q : 'check_status' },
+							beforeSend: function () {
+								show_loader();
+							},
+							success: function (data) {
+								if ((data !== false) && (data.body === '-' || data.body === null || data.body === "")) {
+									data = false;
+								}
 
-							if ((data !== false) && (data.body === '-' || data.body === null || data.body === "")) {
-								data = false;
-							}
-
-							if (data !== false) {		// There is already a cached data 
-								console.log(data);
-								enable_button(btn, "Go");
-								data = data[0];
-
-								$.each(data, function (i, row) {
-									data[i] = row.replace(/\\/g, "");
-								});
-								console.log(data);
-								
-
-								// url
-									$("tr.url td:nth-child(2)").html(domain_raw);
-									$("tr.url td:last").html(domain_raw.length);
-
-								// canonical url
-									if (data.canonical_url !== null) {
-										$("tr.canonical-url td:nth-child(2)").html(data.canonical_url);
-										$("tr.canonical-url td:last").html(data.canonical_url.length);
-									} else {
-										$("tr.canonical-url td:nth-child(2)").html('Not found');
-										$("tr.canonical-url td:last").html('-');
-									}
-
-								// title
-									if (data.title !== null) {
-										$("tr.pageinfo-title td:nth-child(2)").html(data.title);
-										$("tr.pageinfo-title td:last").html(data.title.length);
-									} else {
-										$("tr.pageinfo-title td:nth-child(2)").html('Not found');
-										$("tr.pageinfo-title td:last").html('-');
-									}
-
-								// meta keywords
-									if (data.meta_keywords !== null) {
-										$("tr.meta-keywords td:nth-child(2)").html(data.meta_keywords);
-										$("tr.meta-keywords td:last").html(data.meta_keywords.length);
-									} else {
-										$("tr.meta-keywords td:nth-child(2)").html("Not found");
-										$("tr.meta-keywords td:last").html("-");
-									}
-
-								// meta description
-									if (data.meta_description !== null) {
-										$("tr.meta-description td:nth-child(2)").html(data.meta_description);
-										$("tr.meta-description td:last").html(data.meta_description.length);
-									} else {
-										$("tr.meta-description td:nth-child(2)").html("Not found");
-										$("tr.meta-description td:last").html("-");
-									}
-
-								// meta robots
-									if (data.meta_robots !== null) {
-										$("tr.meta-robots td:nth-child(2)").html(data.meta_robots);
-										$("tr.meta-robots td:last").html(data.meta_robots.length);
-									} else {
-										$("tr.meta-robots td:nth-child(2)").html("Not found");
-										$("tr.meta-robots td:last").html("-");
-									}
-
-								// external links
-									if (data.external_links !== null) {
-										var el = JSON.parse( data.external_links );
-										$("tr.external-links td:nth-child(2)").html(el.links+(" ("+el.nofollow+" nofollow)"));
-									} else {
-										$("tr.external-links td:nth-child(2)").html("Not yet available");
-									}
-
-								// internal links
-									if (data.internal_links !== null) {
-										var il = JSON.parse( data.internal_links );
-										$("tr.internal-links td:nth-child(2)").html(il.links+(" ("+il.nofollow+" nofollow)"));
-									} else {
-										$("tr.internal-links td:nth-child(2)").html("Not yet available");
-									}
-								// h1
-									if (data.h1 !== null) {
-										$("tr.h1 td:nth-child(2)").html(data.h1);
-										$("tr.h1 td:last").html(data.h1.length);
-									} else {
-										$("tr.h1 td:nth-child(2)").html('Not found');
-										$("tr.h1 td:last").html('-');
-									}
-
-								// h2
-									if (data.h2 !== null) {
-										$("tr.h2 td:nth-child(2)").html(data.h2);
-										$("tr.h2 td:last").html(data.h2.length);
-									} else {
-										$("tr.h2 td:nth-child(2)").html('Not found');
-										$("tr.h2 td:last").html('-');
-									}
-
-								// bold/strong
-									if (data.bold_strong !== null) {
-										$("tr.bold-strong td:nth-child(2)").html(data.bold_strong);
-										$("tr.bold-strong td:last").html(data.bold_strong.length);
-									} else {
-										$("tr.bold-strong td:nth-child(2)").html('Not found');
-										$("tr.bold-strong td:nth-child(2)").html('-');
-									}
-
-								// italic/em
-									if (data.italic_em !== null) {
-										$("tr.italic_em td:nth-child(2)").html(data.italic_em);
-										$("tr.italic_em td:last").html(data.italic_em.length);
-									} else {
-										$("tr.italic_em td:nth-child(2)").html('Not found');
-										$("tr.italic_em td:nth-child(2)").html('-');
-									}
-
-								// body
-									if (data.body !== null) {
-										var body = JSON.parse(data.body);
-										$('tr.body-text td:nth-child(2)').html(body.content);
-										$('tr.body-text td:last').html(body.length);
-									} else {
-										$('tr.body-text td:nth-child(2)').html('N/A');
-										$('tr.body-text td:last').html('-');
-									}
-
-								exportableData = data;
-								
-								progress_current++;
-								check_progress(progress_limit, progress_current);
-							} else {
-								$.ajax({
-									url : ajaxurl,
-									type : 'post',
-									data : { action: 'wpspy_ajax', q : 'get_page_info', url : domain_raw },
-									dataType : 'json'
-								}).done(function (data) {
+								if (data !== false) {		// There is already a cached data 
 									console.log(data);
+									enable_button(btn, "Go");
+									data = data[0];
 
-									// here we enable the submit button again
-										enable_button(btn, "Go");
-										
-
-									try{
-										data.meta.description = ( typeof(data.meta[0].description) !== 'undefined' ) ? data.meta[0].description : data.meta.description;
-										data.meta.keywords = ( typeof(data.meta[1].keywords) !== 'undefined' ) ? data.meta[1].keywords : data.meta.keywords;
-										data.meta.robots = ( typeof(data.meta[2].robots) !== 'undefined' ) ? data.meta[2].robots : data.meta.robots;
-									}catch(e) {
-										console.log(e);
-									}
-
+									$.each(data, function (i, row) {
+										if (row != null) {
+											data[i] = row.replace(/\\/g, "");
+										} else {
+											data[i] = "N/A";
+										}
+									});
+									console.log(data);
 									
 
-									var ex_l = {}, in_l = {};
-									// save to database
-										var data_array = {
-											"action" : "wpspy_ajax",
-											"q" : "save_activity",
-											"url" : domain_raw,
-											"canonical_url" : data.canonical_url,
-											"title" : data.title,
-											"meta_keywords" : data.meta.keywords,
-											"meta_description" : data.meta.description,
-											"meta_robots" : data.meta.robots,
-											"h1" : data.h1,
-											"h2" : data.h2,
-											"bold_strong" : data.bold_strong,
-											"italic_em" : data.italic_em,
-											"body" : JSON.stringify(data.body),
-											"external_links" : JSON.stringify( { links : data.external_links.links.length, nofollow : data.external_links.nofollow } ),
-											"internal_links" : JSON.stringify( { links : data.internal_links.links.length, nofollow : data.internal_links.nofollow } )
-										};
+									// url
+										$("tr.url td:nth-child(2)").html(domain_raw);
+										$("tr.url td:last").html(domain_raw.length);
 
-										exportableData = data_array;
+									// canonical url
+										if (data.canonical_url !== null) {
+											$("tr.canonical-url td:nth-child(2)").html(data.canonical_url);
+											$("tr.canonical-url td:last").html(data.canonical_url.length);
+										} else {
+											$("tr.canonical-url td:nth-child(2)").html('Not found');
+											$("tr.canonical-url td:last").html('-');
+										}
 
-										$.ajax({
-											url : ajaxurl,
-											type : 'post',
-											// dataType : 'json',
-											data : data_array,
-											beforeSend : function() {
-												console.log(data_array);
-											}
-										}).done(function (res) {
-											console.log(res);
-										});
+									// title
+										if (data.title !== null) {
+											$("tr.pageinfo-title td:nth-child(2)").html(data.title);
+											$("tr.pageinfo-title td:last").html(data.title.length);
+										} else {
+											$("tr.pageinfo-title td:nth-child(2)").html('Not found');
+											$("tr.pageinfo-title td:last").html('-');
+										}
 
+									// meta keywords
+										if (data.meta_keywords !== null) {
+											$("tr.meta-keywords td:nth-child(2)").html(data.meta_keywords);
+											$("tr.meta-keywords td:last").html(data.meta_keywords.length);
+										} else {
+											$("tr.meta-keywords td:nth-child(2)").html("Not found");
+											$("tr.meta-keywords td:last").html("-");
+										}
 
-									// append data to html body
-										var tbl = "table.tbl-page-info tbody ";
-										$(tbl+'tr.url td:nth-child(2)').html(domain_raw);
-										$(tbl+'tr.url td:last').html(domain_raw.length);
+									// meta description
+										if (data.meta_description !== null) {
+											$("tr.meta-description td:nth-child(2)").html(data.meta_description);
+											$("tr.meta-description td:last").html(data.meta_description.length);
+										} else {
+											$("tr.meta-description td:nth-child(2)").html("Not found");
+											$("tr.meta-description td:last").html("-");
+										}
 
-										var meta_name = "";
-										var meta_length = "";
+									// meta robots
+										if (data.meta_robots !== null) {
+											$("tr.meta-robots td:nth-child(2)").html(data.meta_robots);
+											$("tr.meta-robots td:last").html(data.meta_robots.length);
+										} else {
+											$("tr.meta-robots td:nth-child(2)").html("Not found");
+											$("tr.meta-robots td:last").html("-");
+										}
 
-										meta_name = (data.canonical_url !== "") ? data.canonical_url : "Not found";
-										console.log("meta_name: "+meta_name);
-										meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
+									// external links
+										if (data.external_links !== null) {
+											var el = JSON.parse( data.external_links );
+											$("tr.external-links td:nth-child(2)").html(el.links+(" ("+el.nofollow+" nofollow)"));
+										} else {
+											$("tr.external-links td:nth-child(2)").html("Not yet available");
+										}
 
-										
-										$(tbl+'tr.canonical-url td:nth-child(2)').html(meta_name);
-										$(tbl+'tr.canonical-url td:last').html(meta_length);
+									// internal links
+										if (data.internal_links !== null) {
+											var il = JSON.parse( data.internal_links );
+											$("tr.internal-links td:nth-child(2)").html(il.links+(" ("+il.nofollow+" nofollow)"));
+										} else {
+											$("tr.internal-links td:nth-child(2)").html("Not yet available");
+										}
+									// h1
+										if (data.h1 !== null) {
+											$("tr.h1 td:nth-child(2)").html(data.h1);
+											$("tr.h1 td:last").html(data.h1.length);
+										} else {
+											$("tr.h1 td:nth-child(2)").html('Not found');
+											$("tr.h1 td:last").html('-');
+										}
 
-										meta_name = (data.title !== "") ? data.title : "Not found";
-										console.log("meta_name: "+meta_name);
-										meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
+									// h2
+										if (data.h2 !== null) {
+											$("tr.h2 td:nth-child(2)").html(data.h2);
+											$("tr.h2 td:last").html(data.h2.length);
+										} else {
+											$("tr.h2 td:nth-child(2)").html('Not found');
+											$("tr.h2 td:last").html('-');
+										}
+
+									// bold/strong
+										if (data.bold_strong !== null) {
+											$("tr.bold-strong td:nth-child(2)").html(data.bold_strong);
+											$("tr.bold-strong td:last").html(data.bold_strong.length);
+										} else {
+											$("tr.bold-strong td:nth-child(2)").html('Not found');
+											$("tr.bold-strong td:nth-child(2)").html('-');
+										}
+
+									// italic/em
+										if (data.italic_em !== null) {
+											$("tr.italic_em td:nth-child(2)").html(data.italic_em);
+											$("tr.italic_em td:last").html(data.italic_em.length);
+										} else {
+											$("tr.italic_em td:nth-child(2)").html('Not found');
+											$("tr.italic_em td:nth-child(2)").html('-');
+										}
+
+									// body
+										if (data.body !== null) {
+											var body = JSON.parse(data.body);
+											$('tr.body-text td:nth-child(2)').html(body.content);
+											$('tr.body-text td:last').html(body.length);
+										} else {
+											$('tr.body-text td:nth-child(2)').html('N/A');
+											$('tr.body-text td:last').html('-');
+										}
+
+									exportableData = data;
 									
-										$(tbl+'tr.pageinfo-title td:nth-child(2)').html(meta_name);
-										$(tbl+'tr.pageinfo-title td:last').html(meta_length);
-										
-										meta_name = ( typeof(data.meta.keywords) !== "undefined" ) ? data.meta.keywords : "Not found";
-										console.log("meta_name: "+meta_name);
-										meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
-
-										$(tbl+'tr.meta-keywords td:nth-child(2)').html(meta_name);
-										$(tbl+'tr.meta-keywords td:last').html(meta_length);
-
-										meta_name = ( typeof(data.meta.description) !== "undefined" ) ? data.meta.description : "Not found";
-										console.log("meta_name: "+meta_name);
-										meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
-
-										$(tbl+'tr.meta-description td:nth-child(2)').html(meta_name);
-										$(tbl+'tr.meta-description td:last').html(meta_length);
-
-
-										meta_name = ( typeof(data.meta.robots) !== "undefined" ) ? data.meta.robots : "Not found";
-										console.log("meta_name: "+meta_name);
-										meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
-
-										$(tbl+'tr.meta-robots td:nth-child(2)').html(meta_name);
-										$(tbl+'tr.meta-robots td:last').html(meta_length);
-										
-										meta_name = (data.external_links.links.length !== 0) ? data.external_links.links.length : '0';
-										console.log("meta_name: "+meta_name);
-										$(tbl+'tr.external-links td:nth-child(2)').html(meta_name+" ("+data.external_links.nofollow+" nofollow) ");
-
-										meta_name = (data.internal_links.links.length !== 0) ? data.internal_links.links.length : '0';
-										console.log("meta_name: "+meta_name);
-										$(tbl+'tr.internal-links td:nth-child(2)').html(meta_name+" ("+data.internal_links.nofollow+" nofollow) ");
-
-										meta_name = (data.h1 !== "") ? data.h1 : "Not found";
-										console.log("meta_name: "+meta_name);
-										meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
-
-										$(tbl+'tr.h1 td:nth-child(2)').html(meta_name);
-										$(tbl+'tr.h1 td:last').html(meta_length);
-
-										meta_name = (data.h2 !== "") ? data.h2 : "Not found";
-										console.log("meta_name: "+meta_name);
-										meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
-
-										$(tbl+'tr.h2 td:nth-child(2)').html(meta_name);
-										$(tbl+'tr.h2 td:last').html(meta_length);
-
-										meta_name = (data.bold_strong !== "") ? data.bold_strong : "Not found";
-										console.log("meta_name: "+meta_name);
-										meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
-
-										$(tbl+'tr.bold-strong td:nth-child(2)').html( limitString(meta_name) );
-										$(tbl+'tr.bold-strong td:last').html(meta_length);
-
-										meta_name = (data.italic_em !== "") ? data.italic_em : "Not found";
-										console.log("meta_name: "+meta_name);
-										meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
-
-										$(tbl+'tr.italic-em td:nth-child(2)').html( limitString(meta_name) );
-										$(tbl+'tr.italic-em td:last').html(meta_length);
-
-										meta_name = (data.body.content !== "") ? data.body.content : "Not found";
-										console.log("meta_name: "+meta_name);
-										meta_length = (data.body.length === "") ? '-' : data.body.length;
-
-										$(tbl+'tr.body-text td:nth-child(2)').html(meta_name);
-										$(tbl+'tr.body-text td:last').html(meta_length);
-
 									progress_current++;
 									check_progress(progress_limit, progress_current);
-								});
+								} else {
+									$.ajax({
+										url : ajaxurl,
+										type : 'post',
+										data : { action: 'wpspy_ajax', q : 'get_page_info', url : domain_raw },
+										dataType : 'json',
+										beforeSend: function () {
+											onLoadingState(".page-info");
+										},
+										success: function (data) {
+											console.log(data);
+
+											// here we enable the submit button again
+												enable_button(btn, "Go");
+												
+
+											try{
+												data.meta.description = ( typeof(data.meta[0].description) !== 'undefined' ) ? data.meta[0].description : data.meta.description;
+												data.meta.keywords = ( typeof(data.meta[1].keywords) !== 'undefined' ) ? data.meta[1].keywords : data.meta.keywords;
+												data.meta.robots = ( typeof(data.meta[2].robots) !== 'undefined' ) ? data.meta[2].robots : data.meta.robots;
+											}catch(e) {
+												console.log(e);
+											}
+
+											
+
+											var ex_l = {}, in_l = {};
+											// save to database
+												var data_array = {
+													"action" : "wpspy_ajax",
+													"q" : "save_activity",
+													"url" : domain_raw,
+													"canonical_url" : data.canonical_url,
+													"title" : data.title,
+													"meta_keywords" : data.meta.keywords,
+													"meta_description" : data.meta.description,
+													"meta_robots" : data.meta.robots,
+													"h1" : data.h1,
+													"h2" : data.h2,
+													"bold_strong" : data.bold_strong,
+													"italic_em" : data.italic_em,
+													"body" : JSON.stringify(data.body),
+													"external_links" : JSON.stringify( { links : data.external_links.links.length, nofollow : data.external_links.nofollow } ),
+													"internal_links" : JSON.stringify( { links : data.internal_links.links.length, nofollow : data.internal_links.nofollow } )
+												};
+
+												exportableData = data_array;
+
+												$.ajax({
+													url : ajaxurl,
+													type : 'post',
+													// dataType : 'json',
+													data : data_array,
+													beforeSend : function() {
+														console.log(data_array);
+													}
+												}).done(function (res) {
+													console.log(res);
+												});
+
+
+											// append data to html body
+												var tbl = "table.tbl-page-info tbody ";
+												$(tbl+'tr.url td:nth-child(2)').html(domain_raw);
+												$(tbl+'tr.url td:last').html(domain_raw.length);
+
+												var meta_name = "";
+												var meta_length = "";
+
+												meta_name = (data.canonical_url !== "") ? data.canonical_url : "Not found";
+												console.log("meta_name: "+meta_name);
+												meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
+
+												
+												$(tbl+'tr.canonical-url td:nth-child(2)').html(meta_name);
+												$(tbl+'tr.canonical-url td:last').html(meta_length);
+
+												meta_name = (data.title !== "") ? data.title : "Not found";
+												console.log("meta_name: "+meta_name);
+												meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
+											
+												$(tbl+'tr.pageinfo-title td:nth-child(2)').html(meta_name);
+												$(tbl+'tr.pageinfo-title td:last').html(meta_length);
+												
+												meta_name = ( typeof(data.meta.keywords) !== "undefined" ) ? data.meta.keywords : "Not found";
+												console.log("meta_name: "+meta_name);
+												meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
+
+												$(tbl+'tr.meta-keywords td:nth-child(2)').html(meta_name);
+												$(tbl+'tr.meta-keywords td:last').html(meta_length);
+
+												meta_name = ( typeof(data.meta.description) !== "undefined" ) ? data.meta.description : "Not found";
+												console.log("meta_name: "+meta_name);
+												meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
+
+												$(tbl+'tr.meta-description td:nth-child(2)').html(meta_name);
+												$(tbl+'tr.meta-description td:last').html(meta_length);
+
+
+												meta_name = ( typeof(data.meta.robots) !== "undefined" ) ? data.meta.robots : "Not found";
+												console.log("meta_name: "+meta_name);
+												meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
+
+												$(tbl+'tr.meta-robots td:nth-child(2)').html(meta_name);
+												$(tbl+'tr.meta-robots td:last').html(meta_length);
+												
+												meta_name = (data.external_links.links.length !== 0) ? data.external_links.links.length : '0';
+												console.log("meta_name: "+meta_name);
+												$(tbl+'tr.external-links td:nth-child(2)').html(meta_name+" ("+data.external_links.nofollow+" nofollow) ");
+
+												meta_name = (data.internal_links.links.length !== 0) ? data.internal_links.links.length : '0';
+												console.log("meta_name: "+meta_name);
+												$(tbl+'tr.internal-links td:nth-child(2)').html(meta_name+" ("+data.internal_links.nofollow+" nofollow) ");
+
+												meta_name = (data.h1 !== "") ? data.h1 : "Not found";
+												console.log("meta_name: "+meta_name);
+												meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
+
+												$(tbl+'tr.h1 td:nth-child(2)').html(meta_name);
+												$(tbl+'tr.h1 td:last').html(meta_length);
+
+												meta_name = (data.h2 !== "") ? data.h2 : "Not found";
+												console.log("meta_name: "+meta_name);
+												meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
+
+												$(tbl+'tr.h2 td:nth-child(2)').html(meta_name);
+												$(tbl+'tr.h2 td:last').html(meta_length);
+
+												meta_name = (data.bold_strong !== "") ? data.bold_strong : "Not found";
+												console.log("meta_name: "+meta_name);
+												meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
+
+												$(tbl+'tr.bold-strong td:nth-child(2)').html( limitString(meta_name) );
+												$(tbl+'tr.bold-strong td:last').html(meta_length);
+
+												meta_name = (data.italic_em !== "") ? data.italic_em : "Not found";
+												console.log("meta_name: "+meta_name);
+												meta_length = (meta_name === "Not found" || typeof(meta_name) === 'undefined' || meta_name === null) ? '-' : meta_name.length;
+
+												$(tbl+'tr.italic-em td:nth-child(2)').html( limitString(meta_name) );
+												$(tbl+'tr.italic-em td:last').html(meta_length);
+
+												meta_name = (data.body.content !== "") ? data.body.content : "Not found";
+												console.log("meta_name: "+meta_name);
+												meta_length = (data.body.length === "") ? '-' : data.body.length;
+
+												$(tbl+'tr.body-text td:nth-child(2)').html(meta_name);
+												$(tbl+'tr.body-text td:last').html(meta_length);
+
+											progress_current++;
+											check_progress(progress_limit, progress_current);
+										},
+										error: function (data) {
+											console.warn(data);
+										},
+										complete: function () {
+											removeLoadingState(".page-info");
+										}
+									});
+								}
+							},
+							error: function () {
+
+							},
+							complete: function () {
+								hide_loader();
 							}
 						});
 					}catch(Exception) {
-						
+						console.warn(Exception);
 					}
 
 					
