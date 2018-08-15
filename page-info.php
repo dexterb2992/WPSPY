@@ -85,7 +85,7 @@
                         <!-- /.box-body -->
                         <div class="box-footer text-black">
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-12 table-responsive">
                                 	<table class="table table-striped table-bordered tbl-page-info">
 										<thead>
 											<tr>

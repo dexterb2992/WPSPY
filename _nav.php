@@ -17,11 +17,22 @@
 		);
 	}
 
+
 	if (!function_exists('idlize')) {
 		function idlize($str) {
 			return str_replace("-", "_", $str);
 		}
 	}
+
+	if (!function_exists('wpspyGetHost')) {
+		function wpspyGetHost($address) { 
+		   $parseUrl = parse_url(trim($address)); 
+		   return trim($parseUrl['host'] ? $parseUrl['host'] : array_shift(explode('/', $parseUrl['path'], 2))); 
+		} 
+	}
+
+
+	$_GIVEN_URL_DOMAIN = !empty($_GIVEN_URL) ? wpspyGetHost($_GIVEN_URL) : "";
 
 	$routes = array(
 		"site-info" => "Site Info",

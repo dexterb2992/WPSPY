@@ -83,6 +83,19 @@ $(document).ready(function() {
 		console.log(classSelector+" removeLoadingState");
 	}
 
+	function infoBoxOnLoadingState(classSelector) {
+		// $(classSelector+' .info-box-text').prepend('<i class="fa fa-spinner fa-spin></i>');
+		$(classSelector+' .info-box-text').each(function (i, row) {
+			$(row).prepend("<i class='fa fa-spinner fa-spin'></i> ")
+		});
+	}
+
+	function removeInfoBoxLoadingState(classSelector) {
+		$(classSelector+' .info-box-text i.fa-spinner').fadeOut(function () {
+			$(this).remove();
+		});
+	}
+
 	function extractHostname(url) {
 	    var hostname;
 	    //find & remove protocol (http, ftp, etc.) and get hostname
@@ -877,114 +890,131 @@ $(document).ready(function() {
 					
 				} else if (page === "links") {
 					e.preventDefault();
-					disable_button(btn, 'Please wait...');
+					
 					progress_limit = 1;
+
 					$.ajax({
 						url : ajaxurl,
 						type : 'post',
 						dataType : 'json',
-						data : { action: 'wpspy_ajax', q : 'get_ie_links', url : domain_raw }
-					}).done(function (data) {
-						enable_button(btn, 'Go');
-						exportableData = data;
+						data : { action: 'wpspy_ajax', q : 'get_ie_links', url : domain_raw },
+						beforeSend: function () {
+							disable_button(btn, 'Please wait...');
+							onLoadingState(".ie-links");
+							onLoadingState(".search-engine-results");
+							onLoadingState(".recommended-tools");
+						},
+						complete: function () {
+							enable_button(btn, 'Go');
+							removeLoadingState(".ie-links");
+							removeLoadingState(".search-engine-results");
+							removeLoadingState(".recommended-tools");
+						},
+						success: function (data) {
+							exportableData = data;
 						
-						var _data_i =  {"nofollow" : data.internal_links.nofollow, "links" : data.internal_links.links.length };
-						var _data_e =  {"nofollow" : data.external_links.nofollow, "links" : data.external_links.links.length };
-						console.log("_data_i: ");
-						console.log(_data_i);
-						console.log("_data_e: ");
-						console.log(_data_e);
-						var data_array = {
-							"action" : "wpspy_ajax",
-							"q" : "save_activity",
-							"url" : domain_raw,
-							"internal_links" : JSON.stringify(_data_i),
-							"external_links" : JSON.stringify(_data_e)
-						};
+							var _data_i =  {"nofollow" : data.internal_links.nofollow, "links" : data.internal_links.links.length };
+							var _data_e =  {"nofollow" : data.external_links.nofollow, "links" : data.external_links.links.length };
+							console.log("_data_i: ");
+							console.log(_data_i);
+							console.log("_data_e: ");
+							console.log(_data_e);
+							var data_array = {
+								"action" : "wpspy_ajax",
+								"q" : "save_activity",
+								"url" : domain_raw,
+								"internal_links" : JSON.stringify(_data_i),
+								"external_links" : JSON.stringify(_data_e)
+							};
 
-						// save to database
-							$.ajax({
-								url : ajaxurl,
-								type : 'post',
-								dataType : 'json',
-								data : data_array
-							}).done(function (res) {
-								console.log(res);
-							});	
-
-						// append data to html body
-							$("#external_links_count").html(data.external_links.links.length);
-							$("#external_nofollow_count").html(data.external_links.nofollow);
-
-							$("#internal_links_count").html(data.internal_links.links.length);
-							$("#internal_nofollow_count").html(data.internal_links.nofollow);
-
-						// extract all external links
-							$.each($("tr.external-link"), function (i, row) {
-								$(row).remove();
-							});
-							var li = "";
-							if (data.external_links.links.length > 0) {
+							// save to database
 								$.ajax({
 									url : ajaxurl,
-									type: 'post',
-									data : { action: 'wpspy_ajax', q : 'get_rtlimit' }
-								}).done(function (data) {
-									recommended_tools_limit = data;
-								});
-								
-								$.each(data.external_links.links, function (i, row) {
-									li += '<tr class="url external-link">'+
-											'<td>'+(i+1)+':</td>'+
-											'<td>'+
-												'<a href="'+row.url+'" target="_blank">'+row.url+'</a>'+
-											'</td>'+
-											'<td><div class="anchor-text">'+row.text+'</div></td>'+
-										'</tr>';
-								});
-								$("tr.external-links-outer-row").after(li);
-								var random_array = data.external_links.links.sort(randomize);
-								$("div.recommended-tools .content").html("");
-								$.each(random_array, function (i, row) {
-									console.log('row: '+row);
-									if (i < recommended_tools_limit) {
-										$("div.recommended-tools .content").append('<div class="entry">'+
-											'<div class="left">'+
-											'<a href="'+row.url+'" target="_blank">'+row.url+'</a></div></div>');
-									}
-								});
-							} else {
-								$("div.recommended-tools .content").html("");
-							}
+									type : 'post',
+									dataType : 'json',
+									data : data_array
+								}).done(function (res) {
+									console.log(res);
+								});	
 
-							$.each($("tr.internal-link"), function (i, row) {
-								$(row).remove();
+							// append data to html body
+								$("#external_links_count").html(data.external_links.links.length);
+								$("#external_nofollow_count").html(data.external_links.nofollow);
+
+								$("#internal_links_count").html(data.internal_links.links.length);
+								$("#internal_nofollow_count").html(data.internal_links.nofollow);
+
+							// extract all external links
+								$.each($("tr.external-link"), function (i, row) {
+									$(row).remove();
+								});
+								var li = "";
+								if (data.external_links.links.length > 0) {
+									$.ajax({
+										url : ajaxurl,
+										type: 'post',
+										data : { action: 'wpspy_ajax', q : 'get_rtlimit' }
+									}).done(function (data) {
+										recommended_tools_limit = data;
+									});
+									
+									$.each(data.external_links.links, function (i, row) {
+										li += '<tr class="url external-link">'+
+												'<td>'+(i+1)+':</td>'+
+												'<td>'+
+													'<a href="'+row.url+'" target="_blank">'+row.url+'</a>'+
+												'</td>'+
+												'<td><div class="anchor-text">'+row.text+'</div></td>'+
+											'</tr>';
+									});
+									$("tr.external-links-outer-row").after(li);
+									var random_array = data.external_links.links.sort(randomize);
+									$("div.recommended-tools .results").html("");
+									$.each(random_array, function (i, row) {
+										console.log('row: '+row);
+										if (i < recommended_tools_limit) {
+											$("div.recommended-tools .results").append('<div class="entry">'+
+												'<div class="left">'+
+												'<a href="'+row.url+'" target="_blank">'+row.url+'</a></div></div>');
+										}
+									});
+								} else {
+									$("div.recommended-tools .results").html("");
+								}
+
+								$.each($("tr.internal-link"), function (i, row) {
+									$(row).remove();
+								});
+
+							// extract all internal links
+								if (data.internal_links.links.length > 0) {
+									li = "";
+									$.each(data.internal_links.links, function (i, row) {
+										li += '<tr class="url internal-link">'+
+												'<td>'+(i+1)+':</td>'+
+												'<td>'+
+													'<a href="'+row.url+'" target="_blank">'+row.url+'</a>'+
+												'</td>'+
+												'<td><div class="anchor-text">'+row.text+'</div></td>'+
+											'</tr>';
+									});
+									$("tr.internal-links-outer-row").after(li);
+								}
+
+							progress_current++;
+							check_progress(progress_limit, progress_current);
+
+							findLinksImages();
+							imagePreview();
+							$.each($("div.search-engine-results .entry .right a"), function (i, row) {
+								$(row).addClass("spy-icon spy-icon-eye");
+								$(row).attr("href", $(row).data('link')+encodeURIComponent(extractHostname(domain_raw)));
 							});
-
-						// extract all internal links
-							if (data.internal_links.links.length > 0) {
-								li = "";
-								$.each(data.internal_links.links, function (i, row) {
-									li += '<tr class="url internal-link">'+
-											'<td>'+(i+1)+':</td>'+
-											'<td>'+
-												'<a href="'+row.url+'" target="_blank">'+row.url+'</a>'+
-											'</td>'+
-											'<td><div class="anchor-text">'+row.text+'</div></td>'+
-										'</tr>';
-								});
-								$("tr.internal-links-outer-row").after(li);
-							}
-
-						progress_current++;
-						check_progress(progress_limit, progress_current);
-
-						findLinksImages();
-						imagePreview();
-						$.each($("div.search-engine-results .content .entry .right a"), function (i, row) {
-							$(row).addClass("spy-icon spy-icon-eye");
-							$(row).attr("href", $(row).data('link')+encodeURIComponent(domain_raw));
-						});
+						},
+						error: function (data) {
+							console.warn(data);
+							alert("Something went wrong while trying get Internal and External Links for "+domain_raw+" \nPlease try again later or contact customer support.");
+						}
 					});
 				} else if (page === "seo-stats") {
 					e.preventDefault();
@@ -1228,6 +1258,7 @@ $(document).ready(function() {
 							exportableData = data;
 							$.each(data, function (i, row) {
 								$("."+i+" .right span").html(row);
+								$("#"+i).html(row);
 							});
 							$(".social-metrics .mentions .right").html('<a href="//socialmention.com/search?t=all&q='+encodeURIComponent('//'+domain_raw)+'&btnG=Search" target="_blank" class="spy-icon spy-icon-eye"></a>');
 							
@@ -1241,50 +1272,65 @@ $(document).ready(function() {
 								dataType : 'json',
 								data : { action: 'wpspy_ajax', q : 'get_social_stats', url : domain_raw },
 								beforeSend : function() {
-									$('div.social-sns .entry .right').html('');
-									$(".site-metrics .entry .right").html("");
-									$('.social-sns .title, .social-metrics .box-title').append('<span class="success thin"> (<i class="fa fa-spinner fa-spin"></i> Loading data...)</span>');
-									$('.social-sns button[data-widget="collapse"]').trigger('click');
-								}
-							}).done(function (data) {
-								console.log(data);
+									// $('div.social-sns .entry .right').html('');
+									// $(".site-metrics .entry .right").html("");
+									// $('.social-sns .title, .social-metrics .box-title').append('<span class="success thin"> (<i class="fa fa-spinner fa-spin"></i> Loading data...)</span>');
+									// $('.social-sns button[data-widget="collapse"]').trigger('click');
+									onLoadingState(".social-metrics");
+									infoBoxOnLoadingState(".social-stats");
+								},
+								success: function (data) {
+									console.log(data);
 
-								// prepare variable to handle data
-									var data_array = {
-										url : domain_raw,
-										q : "save_activity"
-									};
+									// prepare variable to handle data
+										var data_array = {
+											url : domain_raw,
+											q : "save_activity"
+										};
 
-								var span = $('<span></span>');
-								$.each(data.social_shares, function (i, row) {
-									console.log('i: '+i+" row: "+row);
-									span.attr("id", i).html(row);
-									// '<span id="'+i+'">'+row+'</span>'
-									if (i == 'twitter_count') {
-										data_array[i] = span.text();
-									} else {
+									/*var span = $('<span></span>');
+									$.each(data.social_shares, function (i, row) {
+										console.log('i: '+i+" row: "+row);
+										span.attr("id", i).html(row);
+										// '<span id="'+i+'">'+row+'</span>'
+										if (i == 'twitter_count') {
+											data_array[i] = span.text();
+										} else {
+											data_array[i] = row;
+										}
+										$("div.social-sns ."+i+" .right").html( $('<span></span>').html(span).html() );
+										
+									});*/
+
+									$.each(data.social_shares, function (i, row) {
+										$("#"+i).html(row);
 										data_array[i] = row;
-									}
-									$("div.social-sns ."+i+" .right").html( $('<span></span>').html(span).html() );
-									
-								});
-
-								data_array.action = 'wpspy_ajax';
-
-								// save to database
-									$.ajax({
-										url : ajaxurl,
-										type : 'post',
-										dataType : 'json',
-										data : data_array
-									}).done(function (res) {
-										console.log(res);
 									});
 
-								exportableData = data_array;
-								
-								$('.social-sns .box-title .success').fadeOut(function() { $(this).remove(); });
-								$('.social-sns button[data-widget="collapse"]').trigger('click');
+									data_array.action = 'wpspy_ajax';
+
+									// save to database
+										$.ajax({
+											url : ajaxurl,
+											type : 'post',
+											dataType : 'json',
+											data : data_array
+										}).done(function (res) {
+											console.log(res);
+										});
+
+									exportableData = data_array;
+									
+									$('.social-sns .box-title .success').fadeOut(function() { $(this).remove(); });
+									$('.social-sns button[data-widget="collapse"]').trigger('click');
+								},
+								error: function (data) {
+									console.warn(data);
+								},
+								complete: function () {
+									removeInfoBoxLoadingState(".social-stats");
+									removeLoadingState(".social-metrics");
+								}
 							});
 
 							
@@ -1332,7 +1378,7 @@ $(document).ready(function() {
 								if (typeof(row) === null || row === null || row === undefined || row.length === 0) {
 									$(".rank-in-country tbody").append('<tr>'+
 										'<td colspan="4">'+
-											'<span class="failed">No data available for now. Check out the <a href="'+$("#nav_seo_stats").data("href")+'">SEO Stats</a>  for '+domain_raw+' and try again.</span>'+
+											'<span class="failed">No data available for now. Check out the <a href="?page=wpspy-seo-stats" target="_blank">SEO Stats</a>  for '+domain_raw+' and try again.</span>'+
 										'</td>'+
 									'</tr>');
 								} else {
@@ -1888,33 +1934,36 @@ $(document).ready(function() {
 			var $this = $(this);
 			globalDomain = (url).substr(7);
 
-			try{
+			try {
 				$.ajax({
 					url : ajaxurl,
 					type : 'post',
 					dataType : 'json',
 					data : { action: 'wpspy_ajax', 'q' : 'get_external_backlinks', 'page' : '1', url : globalDomain, 'num' : $("#backlinks_num").val() },
-					beforeSend : function() {
-						disable_button($this, "Please wait...");
+					beforeSend : function () {
+						disable_button($this, "<i class='fa fa-spinner fa-spin'></i> Please wait...");
+					},
+					complete: function () {
+						enable_button($this, "<i class='fa fa-search'></i> Get Backlinks");
+					},
+					success: function (data) {
+						$(".tbl-backlinks-holder").html(data.backlinks_html);
+						$("img[src='//www.openlinkprofiler.org/public/img/lm-add.png']").parent('a').remove();
+						$("#backlinks_pagination").html(data.pagination);
+
+						showToolTip();
+
+						$("#openlink_invitation").fadeOut();
+					},
+					error: function (data) {
+						console.warn(data);
+						// let's invite the user to signup for an openlinkprofiler account
+						$("#openlink_invitation").fadeIn();
 					}
-				}).done(function (data) {
-					enable_button($this, "Get Backlinks");
-					$(".tbl-backlinks-holder").html(data.backlinks_html);
-					$("img[src='//www.openlinkprofiler.org/public/img/lm-add.png']").parent('a').remove();
-					$("#backlinks_pagination").html(data.pagination);
-
-					showToolTip();
-
-					$("#openlink_invitation").fadeOut();
-				}).error(function (data) {
-					console.warn(data);
-					// let's invite the user to signup for an openlinkprofiler account
-					enable_button($this, "Get Backlinks");
-					$("#openlink_invitation").fadeIn();
 				});
-			}catch(Exception) {
+			} catch (Exception) {
 				console.log(Exception);
-				enable_button($this, "Get Backlinks");
+				enable_button($this, "<i class='fa fa-search'></i> Get Backlinks");
 				$("#openlink_invitation").fadeIn();
 			}
 		});
@@ -1976,21 +2025,26 @@ $(document).ready(function() {
 				type : 'post',
 				data : { action: 'wpspy_ajax', q : 'update_rtl_settings', val : val },
 				beforeSend : function () {
-					disable_button(btn, "Please wait...");
+					disable_button(btn, "<i class='fa fa-spinner fa-spin'></i> Please wait...");
+				},
+				complete: function () {
+					enable_button(btn, "Save");
+					btn.after('<span class="error">Something went wrong...</span>');
+					btn.next('span').fadeOut(5000, function() {
+						$(this).remove();
+					});
+				},
+				success: function (data) {
+					console.log(data);
+					enable_button(btn, "Save");
+					btn.parent('div').after('<span class="alert alert-success">Successfully saved! This will take effect on your next searches.</span>');
+					btn.parent('div').next('span.alert-success').fadeOut(5000, function() {
+						$(this).remove();
+					});
+				},
+				error: function (data) {
+					alert("Something went wrong while trying to update your Recommended tools setting. Please try again later or contact customer support.");
 				}
-			}).done(function (data) {
-				console.log(data);
-				enable_button(btn, "Save");
-				btn.after('<span class="success">Successfully saved! This will take effect on your next searches.</span>');
-				btn.next('span').fadeOut(5000, function() {
-					$(this).remove();
-				});
-			}).fail(function() {
-				enable_button(btn, "Save");
-				btn.after('<span class="error">Something went wrong...</span>');
-				btn.next('span').fadeOut(5000, function() {
-					$(this).remove();
-				});
 			});
 		});	
 
