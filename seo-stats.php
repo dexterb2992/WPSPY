@@ -246,9 +246,7 @@
                                 Cached
                             </h3>
                         </div>
-                        <div class="box-body">
-                            
-                        </div>
+                        <div class="box-body no-padding"></div>
                         <div class="box-footer no-border">
                             <div class="row">
                                 <div class="col-md-12">

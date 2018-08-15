@@ -208,7 +208,7 @@
                                 Domain Info
                             </h3>
                         </div>
-                        <div class="box-body">
+                        <div class="box-body no-padding">
                             
                         </div>
                         <div class="box-footer no-border">
