@@ -3,45 +3,47 @@
     include plugin_dir_path( __FILE__ )."classes/config.php";
     include plugin_dir_path( __FILE__ )."classes/dbhelper.php";
     include plugin_dir_path( __FILE__ )."classes/data.php";
-
-    if( !empty($_GIVEN_URL) && trim($_GIVEN_URL) != "" ){
-		$cached = checkDataStatus('site_info', ''.$_GIVEN_URL);
-		
-		if( ($cached !== 'false') && ( isset($cached['ip']) && $cached["ip"] != "N/A" ) ){
-			$cached["wordpress_data"] = str_replace('\\', '', $cached["wordpress_data"]);
-			$cached["dns"] = str_replace('\\', '', $cached["dns"]);
-
-			$onsite = new stdClass();
-			$onsite->robot = $cached['robot'];
-			$onsite->sitemap_index = $cached['sitemap_index'];
-
-			$whois = new stdClass();
-			$whois->geolocation = new stdClass();
-			$whois->geolocation->ip = $cached['ip'];
-			$whois->geolocation->city = $cached['city'];
-			$whois->geolocation->country = $cached['country'];
-			$whois->geolocation->country_code = $cached['country_code'];
-			$whois->dns = json_decode($cached["dns"]);
-
-			$wordpress_data = json_decode($cached['wordpress_data']);
-			
-			echo '<script>exportableData = '.json_encode($cached).';</script>';
-		}else{
-			$cached = "false";
-			
-			$onsite = json_decode(getOnSite($_GIVEN_URL, 'json'));
-			$whois = json_decode(getWhOIS($_GIVEN_URL, 'json'));
-			$wordpress_data = json_decode(getWordpressData($_GIVEN_URL, 'json'));
-
-			$data_array = array();
-		}
-	}
 ?>
 
 <div class="wrapper">
     <!-- Content Wrapper. Contains page content -->
     <div>
-        <?php include "_nav.php"; ?>
+        <?php
+        	include "_nav.php";
+        	
+		    if( !empty($_GIVEN_URL) && trim($_GIVEN_URL) != "" ){
+				$cached = checkDataStatus('site_info', ''.$_GIVEN_URL);
+				
+				if( ($cached !== 'false') && ( isset($cached['ip']) && $cached["ip"] != "N/A" ) ){
+					$cached["wordpress_data"] = str_replace('\\', '', $cached["wordpress_data"]);
+					$cached["dns"] = str_replace('\\', '', $cached["dns"]);
+
+					$onsite = new stdClass();
+					$onsite->robot = $cached['robot'];
+					$onsite->sitemap_index = $cached['sitemap_index'];
+
+					$whois = new stdClass();
+					$whois->geolocation = new stdClass();
+					$whois->geolocation->ip = $cached['ip'];
+					$whois->geolocation->city = $cached['city'];
+					$whois->geolocation->country = $cached['country'];
+					$whois->geolocation->country_code = $cached['country_code'];
+					$whois->dns = json_decode($cached["dns"]);
+
+					$wordpress_data = json_decode($cached['wordpress_data']);
+					
+					echo '<script>exportableData = '.json_encode($cached).';</script>';
+				}else{
+					$cached = "false";
+					
+					$onsite = json_decode(getOnSite($_GIVEN_URL, 'json'));
+					$whois = json_decode(getWhOIS($_GIVEN_URL, 'json'));
+					$wordpress_data = json_decode(getWordpressData($_GIVEN_URL, 'json'));
+
+					$data_array = array();
+				}
+			}
+        ?>
         <section class="content">
             <div class="row" style="margin-bottom: 20px;">
                 <div class="col-md-12">

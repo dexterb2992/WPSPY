@@ -3,77 +3,79 @@
 	include plugin_dir_path( __FILE__ )."classes/config.php";
 	include plugin_dir_path( __FILE__ )."classes/dbhelper.php";
 	include plugin_dir_path( __FILE__ )."classes/data.php";
-
-	if( isset($_GIVEN_URL) && trim($_GIVEN_URL) != "" ){
-		$cached = checkDataStatus('social_stats', $_GIVEN_URL);
-
-		if( ($cached !== 'false') && ( isset($cached["score_sentiment"]) && 
-		$cached["score_sentiment"] != '-') ) {
-			$socialstats = new stdClass();
-			$socialmention = new stdClass();
-			$socialstats->social_shares = new stdClass();
-
-			foreach ($cached as $key => $value) {
-				$socialstats->social_shares->$key = $value;
-			}
-
-			$socialmention->score_strength = $cached["score_strength"];
-			$socialmention->score_sentiment = $cached["score_sentiment"];
-			$socialmention->score_passion = $cached["score_passion"];
-			$socialmention->score_reach = $cached["score_reach"];
-			echo '<script>exportableData = '.json_encode($cached).';</script>';
-
-		}else{
-			function getsm(){
-				$_GIVEN_URL = "";
-
-				if (isset($_GET['url'])) {
-					$_GIVEN_URL = preg_replace(
-					  '#((https?|ftp)://(\S*?\.\S*?))([\s)\[\]{},;"\':<]|\.\s|$)#i',
-					  "$1",
-					  $_GET['url']
-					);
-				}
-
-				return json_decode(getSocialMention($_GIVEN_URL));
-			}
-
-			$socialstats = json_decode(getSociaLStats($_GIVEN_URL, 'json'));
-
-			$limit = 5;
-			
-			for($x = 0; $x < $limit; $x++){
-				$socialmention = getsm();
-				if(isset($socialmention) && count($socialmention) < 1 ){
-					$socialmention = getsm();
-				}else{
-					break;
-				}
-			}
-
-			$data_array = array();
-			if( isset($socialstats) ){
-				foreach ($socialstats->social_shares as $key => $value) {
-					$data_array[$key] = (string) $value;
-				}
-			}
-
-			if( isset($socialmention) ){
-				foreach ($socialmention as $key => $value) {
-					$data_array[$key] = (is_object($value) || is_array($value)) ? json_encode($value) : $value;
-				}
-			}
-
-			echo '<script>exportableData = '.json_encode($data_array).';</script>';
-			save_this_activity('http://'.$_GIVEN_URL, $data_array);
-		}
-	}
 ?>
 
 <div class="wrapper">
     <!-- Content Wrapper. Contains page content -->
     <div>
-        <?php include "_nav.php"; ?>
+        <?php
+        	include "_nav.php";
+
+        	if( isset($_GIVEN_URL) && trim($_GIVEN_URL) != "" ){
+				$cached = checkDataStatus('social_stats', $_GIVEN_URL);
+
+				if( ($cached !== 'false') && ( isset($cached["score_sentiment"]) && 
+				$cached["score_sentiment"] != '-') ) {
+					$socialstats = new stdClass();
+					$socialmention = new stdClass();
+					$socialstats->social_shares = new stdClass();
+
+					foreach ($cached as $key => $value) {
+						$socialstats->social_shares->$key = $value;
+					}
+
+					$socialmention->score_strength = $cached["score_strength"];
+					$socialmention->score_sentiment = $cached["score_sentiment"];
+					$socialmention->score_passion = $cached["score_passion"];
+					$socialmention->score_reach = $cached["score_reach"];
+					echo '<script>exportableData = '.json_encode($cached).';</script>';
+
+				}else{
+					function getsm(){
+						$_GIVEN_URL = "";
+
+						if (isset($_GET['url'])) {
+							$_GIVEN_URL = preg_replace(
+							  '#((https?|ftp)://(\S*?\.\S*?))([\s)\[\]{},;"\':<]|\.\s|$)#i',
+							  "$1",
+							  $_GET['url']
+							);
+						}
+
+						return json_decode(getSocialMention($_GIVEN_URL));
+					}
+
+					$socialstats = json_decode(getSociaLStats($_GIVEN_URL, 'json'));
+
+					$limit = 5;
+					
+					for($x = 0; $x < $limit; $x++){
+						$socialmention = getsm();
+						if(isset($socialmention) && count($socialmention) < 1 ){
+							$socialmention = getsm();
+						}else{
+							break;
+						}
+					}
+
+					$data_array = array();
+					if( isset($socialstats) ){
+						foreach ($socialstats->social_shares as $key => $value) {
+							$data_array[$key] = (string) $value;
+						}
+					}
+
+					if( isset($socialmention) ){
+						foreach ($socialmention as $key => $value) {
+							$data_array[$key] = (is_object($value) || is_array($value)) ? json_encode($value) : $value;
+						}
+					}
+
+					echo '<script>exportableData = '.json_encode($data_array).';</script>';
+					save_this_activity('http://'.$_GIVEN_URL, $data_array);
+				}
+			}
+        ?>
         <section class="content">
             <div class="row" style="margin-bottom: 20px;">
                 <div class="col-md-12">

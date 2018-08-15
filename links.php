@@ -35,7 +35,7 @@
                                 <button type="button" class="btn bg-primary btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="Collapse" style="margin-right: 5px;">
                                 <i class="fa fa-minus"></i></button>
                             </div>
-                            <i class="fa fa-external-link"></i>
+                            <i class="ion ion-android-share-alt"></i>
                             <h3 class="box-title">
                                 External &amp; Internal Links
                             </h3>
@@ -153,7 +153,7 @@
 		                            data-toggle="tooltip" title="Collapse" style="margin-right: 5px;">
 		                        <i class="fa fa-minus"></i></button>
 		                    </div>
-		                    <i class="fa fa-globe"></i>
+		                    <i class="ion ion-ios-world-outline"></i>
 		                    <h3 class="box-title">
 		                        Backinks
 		                    </h3>
@@ -274,10 +274,12 @@
                     <!-- RECOMMENDED TOOLS -->
                     <div class="box box-solid bg-blue-gradient recommended-tools">
                         <div class="box-header">
-                            <i class="fa fa-gear"></i>
+                            <i class="ion ion-thumbsup"></i>
                             <h3 class="box-title">
                             	Recommended tools
-                            	<span class="pull-right settings" data-toggle="modal" data-target="#settings_dialog">Setting</span>
+                            	<span class="pull-right settings btn btn-xs bg-blue-gradient btn-flat" data-toggle="modal" data-target="#settings_dialog">
+                            		<i class="ion ion-ios-settings"></i> Settings
+                            	</span>
                             </h3>
                             <div class="pull-right box-tools">
                                 <button type="button" class="btn btn-primary btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>

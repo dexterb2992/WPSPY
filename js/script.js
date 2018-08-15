@@ -2018,8 +2018,10 @@ $(document).ready(function() {
 		});
 
 		$(document).on("submit", $("#rtl_settings"), function () {
-			var btn = $("#save_settings");
-			var val = $("#settings").val();
+			var btn = $("#save_settings"),
+				val = $("#settings").val(),
+				$alert = "";
+
 			$.ajax({
 				url : ajaxurl,
 				type : 'post',
@@ -2029,21 +2031,22 @@ $(document).ready(function() {
 				},
 				complete: function () {
 					enable_button(btn, "Save");
-					btn.after('<span class="error">Something went wrong...</span>');
-					btn.next('span').fadeOut(5000, function() {
-						$(this).remove();
-					});
 				},
 				success: function (data) {
 					console.log(data);
 					enable_button(btn, "Save");
-					btn.parent('div').after('<span class="alert alert-success">Successfully saved! This will take effect on your next searches.</span>');
-					btn.parent('div').next('span.alert-success').fadeOut(5000, function() {
+					$alert = $('<div class="pull-left"><small class="alert alert-success"><i class="fa fa-check"></i><strong> Success!</strong> This will take effect on your next searches.</small></div>');
+					btn.parents('.modal').find('.modal-footer').prepend($alert);
+					$alert.fadeOut(5000, function() {
 						$(this).remove();
 					});
 				},
 				error: function (data) {
-					alert("Something went wrong while trying to update your Recommended tools setting. Please try again later or contact customer support.");
+					$alert = $('<div class="pull-left"><small class="alert alert-danger"><i class="fa fa-warning"></i><strong> Opps!</strong> Please try again later or contact customer support.</small></div>');
+					btn.parents('.modal').find('.modal-footer').prepend($alert);
+					$alert.fadeOut(5000, function() {
+						$(this).remove();
+					});
 				}
 			});
 		});	

@@ -455,13 +455,13 @@
   }
 
   .tutorial .title.right, .tutorial .content.right{
-    margin-left: 26px; 
-    margin-right: 10px;
+    /*margin-left: 26px; */
+    /*margin-right: 10px;*/
   }
 
   .tutorial .title.left, .tutorial .content.left{
-    margin-right: 26px;
-    margin-left: 10px;
+    /*margin-right: 26px;*/
+    /*margin-left: 10px;*/
   }
 
   .tutorial .video {
@@ -509,8 +509,7 @@
   
   span.pull-right.settings {
     font-size: 11px;
-    color: rgb(65, 188, 224);
-    padding-left: 10px;
+    margin-left: 10px;
     cursor: pointer;
   }
 

@@ -3,61 +3,63 @@
     include plugin_dir_path( __FILE__ )."classes/config.php";
     include plugin_dir_path( __FILE__ )."classes/dbhelper.php";
     include plugin_dir_path( __FILE__ )."classes/data.php";
-
-    if( isset( $_GIVEN_URL ) && trim($_GIVEN_URL) != ""  ){
-		$cached = checkDataStatus('page_info', $_GIVEN_URL);
-		$cached_links = checkDataStatus('link', $_GIVEN_URL);
-		
-		if( ($cached != 'false') && ( ($cached["body"] != "-") && (!is_null($cached["body"])) && !empty($cached["body"]) ) ){
-			$pageinfo = new stdClass();
-			
-			foreach ($cached as $key => $value) {
-				$pageinfo->$key = str_replace("\\", "", $value);
-			}
-
-			for($x=0; $x<3; $x++){
-				$pageinfo->meta[$x] = new stdClass();
-			}
-
-			$pageinfo->meta[0]->description = $cached['meta_description'];
-			$pageinfo->meta[1]->keywords = $cached['meta_keywords'];
-			$pageinfo->meta[2]->robots = $cached['meta_robots'];
-			$pageinfo->body = new stdClass();
-			$pageinfo->body = json_decode( str_replace("\\", "", $cached["body"]) );
-			echo '<script>exportableData = '.json_encode($cached).';</script>';
-		}else{
-			$html = getPageInfo("http://".$_GIVEN_URL, 'json');
-
-			$pageinfo = json_decode($html);
-
-			$data_array = array();
-		}
-
-		$pageinfo->internal_links = new stdClass();
-		$pageinfo->external_links = new stdClass();
-
-		if( $cached_links != 'false' && ( $cached_links["external_links"] != '' || $cached_links["internal_links"] != '' ) ){
-			$pageinfo->internal_links = json_decode( str_replace('/\\/', '', $cached_links['internal_links']) );
-			$pageinfo->external_links = json_decode( str_replace('/\\/', '', $cached_links['external_links']) );
-
-		}else{
-			$links = getLinks("http://".$_GIVEN_URL);
-			$pageinfo->internal_links->links = @count($links["internal_links"]["links"]);
-			$pageinfo->internal_links->nofollow = @count($links["internal_links"]["nofollow"]);
-
-			$pageinfo->external_links->links = @count($links["external_links"]["links"]);
-			$pageinfo->external_links->nofollow = @count($links["external_links"]["nofollow"]);
-
-			$data_array["internal_links"] = json_encode( array("links" => @count($pageinfo->internal_links->links), "nofollow" => $pageinfo->internal_links->nofollow) );
-			$data_array["external_links"] = json_encode( array("links" => @count($pageinfo->external_links->links), "nofollow" => $pageinfo->external_links->nofollow) );
-		}
-	}
 ?>
 
 <div class="wrapper">
     <!-- Content Wrapper. Contains page content -->
     <div>
-        <?php include "_nav.php"; ?>
+        <?php
+        	include "_nav.php";
+        	
+        	if( isset( $_GIVEN_URL ) && trim($_GIVEN_URL) != ""  ){
+				$cached = checkDataStatus('page_info', $_GIVEN_URL);
+				$cached_links = checkDataStatus('link', $_GIVEN_URL);
+				
+				if( ($cached != 'false') && ( ($cached["body"] != "-") && (!is_null($cached["body"])) && !empty($cached["body"]) ) ){
+					$pageinfo = new stdClass();
+					
+					foreach ($cached as $key => $value) {
+						$pageinfo->$key = str_replace("\\", "", $value);
+					}
+
+					for($x=0; $x<3; $x++){
+						$pageinfo->meta[$x] = new stdClass();
+					}
+
+					$pageinfo->meta[0]->description = $cached['meta_description'];
+					$pageinfo->meta[1]->keywords = $cached['meta_keywords'];
+					$pageinfo->meta[2]->robots = $cached['meta_robots'];
+					$pageinfo->body = new stdClass();
+					$pageinfo->body = json_decode( str_replace("\\", "", $cached["body"]) );
+					echo '<script>exportableData = '.json_encode($cached).';</script>';
+				}else{
+					$html = getPageInfo("http://".$_GIVEN_URL, 'json');
+
+					$pageinfo = json_decode($html);
+
+					$data_array = array();
+				}
+
+				$pageinfo->internal_links = new stdClass();
+				$pageinfo->external_links = new stdClass();
+
+				if( $cached_links != 'false' && ( $cached_links["external_links"] != '' || $cached_links["internal_links"] != '' ) ){
+					$pageinfo->internal_links = json_decode( str_replace('/\\/', '', $cached_links['internal_links']) );
+					$pageinfo->external_links = json_decode( str_replace('/\\/', '', $cached_links['external_links']) );
+
+				}else{
+					$links = getLinks("http://".$_GIVEN_URL);
+					$pageinfo->internal_links->links = @count($links["internal_links"]["links"]);
+					$pageinfo->internal_links->nofollow = @count($links["internal_links"]["nofollow"]);
+
+					$pageinfo->external_links->links = @count($links["external_links"]["links"]);
+					$pageinfo->external_links->nofollow = @count($links["external_links"]["nofollow"]);
+
+					$data_array["internal_links"] = json_encode( array("links" => @count($pageinfo->internal_links->links), "nofollow" => $pageinfo->internal_links->nofollow) );
+					$data_array["external_links"] = json_encode( array("links" => @count($pageinfo->external_links->links), "nofollow" => $pageinfo->external_links->nofollow) );
+				}
+			}
+        ?>
         <section class="content">
             <div class="row" style="margin-bottom: 20px;">
                 <div class="col-md-12">

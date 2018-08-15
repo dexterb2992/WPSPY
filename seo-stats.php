@@ -3,106 +3,108 @@
     include plugin_dir_path( __FILE__ )."classes/config.php";
     include plugin_dir_path( __FILE__ )."classes/dbhelper.php";
     include plugin_dir_path( __FILE__ )."classes/data.php";
-
-    if( isset( $_GIVEN_URL ) && trim($_GIVEN_URL) != "" ){
-
-        $cached = checkDataStatus('seo_stats', $_GIVEN_URL);
-        
-        if( ($cached !== 'false') && ( isset($cached["alexa_rank"]) && 
-        $cached["alexa_rank"] != 0) ){
-            $seostats = array();
-            $seostats["rank"] = new stdClass();
-            $seostats["backlinks"] = new stdClass();
-            $seostats["pages_indexed"] = new stdClass();
-            $seostats["site_metrics"] = new stdClass();
-            $seostats["cached"] = new stdClass();
-
-            $seostats["rank"]->alexa_traffic_rank = $cached["alexa_rank"];
-            $seostats["rank"]->quantcast_traffic_rank = $cached["quantcast_traffic_rank"];
-            $seostats["rank"]->google_page_rank = $cached["google_page_rank"];
-            $seostats["rank"]->alexa_rank_in_country = @json_decode($cached["alexa_rank_in_country"]);
-
-            $seostats["backlinks"]->alexa = $cached["backlinks_alexa"];
-            $seostats["backlinks"]->open_site_explorer = $cached["backlinks_open_site_explorer"];
-            $seostats["backlinks"]->google = $cached["backlinks_google"];
-            // $seostats["backlinks"]->ahrefs = $cached["backlinks_ahrefs"];
-            $seostats["backlinks"]->sogou = $cached["backlinks_sogou"];
-
-            $seostats["pages_indexed"]->ask = $cached["page_indexed_ask"];
-            $seostats["pages_indexed"]->baidu = $cached["page_indexed_baidu"];
-            $seostats["pages_indexed"]->bing = $cached["page_indexed_bing"];
-            $seostats["pages_indexed"]->goo = $cached["page_indexed_goo"];
-            $seostats["pages_indexed"]->google = $cached["page_indexed_google"];
-            $seostats["pages_indexed"]->sogou = $cached["page_indexed_sogou"];
-            $seostats["pages_indexed"]->yahoo = $cached["page_indexed_yahoo"];
-            $seostats["pages_indexed"]->yandex = $cached["page_indexed_yandex"];
-            $seostats["pages_indexed"]->_360 = $cached["page_indexed__360"];
-
-            $seostats["site_metrics"]->bounce_rate = @$cached["bounce_rate"];
-            $seostats["site_metrics"]->dailytime_onsite = @$cached["dailytime_onsite"];
-            $seostats["site_metrics"]->daily_pageviews_per_visitor = @$cached["daily_pageviews_per_visitor"];
-
-            $seostats["cached"]->archive = "https://web.archive.org/web/*/http://".$_GIVEN_URL;
-            $seostats["cached"]->google = " https://webcache.googleusercontent.com/search?cd=1&hl=en&ct=clnk&gl=us&q=cache:http://".$_GIVEN_URL;
-            echo '<script>exportableData = '.json_encode($seostats).';</script>';
-        }else{
-            $html = getSeoStats($_GIVEN_URL, 'json');
-            $seostats = (array) json_decode($html);
-            echo '<script>exportableData = '.$html.';</script>';
-
-            $data_array = array();
-            $data_array["url"] = $_GIVEN_URL;
-            $data_array["alexa_rank"] = $seostats["rank"]->alexa_traffic_rank;
-            $data_array["google_page_rank"] = $seostats["rank"]->google_page_rank;
-            $data_array["quantcast_traffic_rank"] = $seostats["rank"]->quantcast_traffic_rank;
-
-            $data_array["alexa_rank_in_country"] = (string) json_encode($seostats["rank"]->alexa_rank_in_country);
-
-            $data_array["bounce_rate"] = $seostats["site_metrics"]->bounce_rate;
-            $data_array["dailytime_onsite"] = $seostats["site_metrics"]->dailytime_onsite;
-            $data_array["daily_pageviews_per_visitor"] = $seostats["site_metrics"]->daily_pageviews_per_visitor;
-
-
-            $data_array["backlinks_alexa"] = $seostats["backlinks"]->alexa;
-            $data_array["backlinks_google"] = $seostats["backlinks"]->google;
-            $data_array["backlinks_open_site_explorer"] = $seostats["backlinks"]->open_site_explorer;
-            $data_array["backlinks_sogou"] = $seostats["backlinks"]->sogou;
-            // $data_array["backlinks_ahrefs"] = $seostats["backlinks"]->ahrefs;
-
-            $data_array["page_indexed_ask"] = $seostats["pages_indexed"]->ask;
-            $data_array["page_indexed_baidu"] = $seostats["pages_indexed"]->baidu;
-            $data_array["page_indexed_bing"] = $seostats["pages_indexed"]->bing;
-            $data_array["page_indexed_goo"] = $seostats["pages_indexed"]->goo;
-            $data_array["page_indexed_google"] = $seostats["pages_indexed"]->google;
-            $data_array["page_indexed_sogou"] = $seostats["pages_indexed"]->sogou;
-            $data_array["page_indexed_yahoo"] = $seostats["pages_indexed"]->yahoo;
-            $data_array["page_indexed_yandex"] = $seostats["pages_indexed"]->yandex;
-
-            if( !empty($seostats["pages_indexed"]->_360) ){
-                $data_array["page_indexed__360"] = $seostats["pages_indexed"]->_360;
-            }
-
-            $temp = $seostats["site_metrics"]->bounce_rate;
-
-            $data_array["bounce_rate"] = $temp == "" ? 0 : $temp;
-            $data_array["dailytime_onsite"] = $seostats["site_metrics"]->dailytime_onsite;
-            $data_array["daily_pageviews_per_visitor"] = $seostats["site_metrics"]->daily_pageviews_per_visitor;
-            $status = save_this_activity($_GIVEN_URL, $data_array);
-            $data_array["cached"] = array(
-                "archive" => "https://web.archive.org/web/*/".$_GIVEN_URL,
-                "google" => "http://webcache.googleusercontent.com/search?cd=1&hl=en&ct=clnk&gl=us&q=cache:".$_GIVEN_URL
-            );
-            echo '<script>exportableData = '.json_encode($data_array).';</script>';
-            
-        }
-        
-    }
 ?>
 
 <div class="wrapper">
     <!-- Content Wrapper. Contains page content -->
     <div>
-        <?php include "_nav.php"; ?>
+        <?php
+            include "_nav.php";
+
+            if( isset( $_GIVEN_URL ) && trim($_GIVEN_URL) != "" ){
+
+                $cached = checkDataStatus('seo_stats', $_GIVEN_URL);
+                
+                if( ($cached !== 'false') && ( isset($cached["alexa_rank"]) && 
+                $cached["alexa_rank"] != 0) ){
+                    $seostats = array();
+                    $seostats["rank"] = new stdClass();
+                    $seostats["backlinks"] = new stdClass();
+                    $seostats["pages_indexed"] = new stdClass();
+                    $seostats["site_metrics"] = new stdClass();
+                    $seostats["cached"] = new stdClass();
+
+                    $seostats["rank"]->alexa_traffic_rank = $cached["alexa_rank"];
+                    $seostats["rank"]->quantcast_traffic_rank = $cached["quantcast_traffic_rank"];
+                    $seostats["rank"]->google_page_rank = $cached["google_page_rank"];
+                    $seostats["rank"]->alexa_rank_in_country = @json_decode($cached["alexa_rank_in_country"]);
+
+                    $seostats["backlinks"]->alexa = $cached["backlinks_alexa"];
+                    $seostats["backlinks"]->open_site_explorer = $cached["backlinks_open_site_explorer"];
+                    $seostats["backlinks"]->google = $cached["backlinks_google"];
+                    // $seostats["backlinks"]->ahrefs = $cached["backlinks_ahrefs"];
+                    $seostats["backlinks"]->sogou = $cached["backlinks_sogou"];
+
+                    $seostats["pages_indexed"]->ask = $cached["page_indexed_ask"];
+                    $seostats["pages_indexed"]->baidu = $cached["page_indexed_baidu"];
+                    $seostats["pages_indexed"]->bing = $cached["page_indexed_bing"];
+                    $seostats["pages_indexed"]->goo = $cached["page_indexed_goo"];
+                    $seostats["pages_indexed"]->google = $cached["page_indexed_google"];
+                    $seostats["pages_indexed"]->sogou = $cached["page_indexed_sogou"];
+                    $seostats["pages_indexed"]->yahoo = $cached["page_indexed_yahoo"];
+                    $seostats["pages_indexed"]->yandex = $cached["page_indexed_yandex"];
+                    $seostats["pages_indexed"]->_360 = $cached["page_indexed__360"];
+
+                    $seostats["site_metrics"]->bounce_rate = @$cached["bounce_rate"];
+                    $seostats["site_metrics"]->dailytime_onsite = @$cached["dailytime_onsite"];
+                    $seostats["site_metrics"]->daily_pageviews_per_visitor = @$cached["daily_pageviews_per_visitor"];
+
+                    $seostats["cached"]->archive = "https://web.archive.org/web/*/http://".$_GIVEN_URL;
+                    $seostats["cached"]->google = " https://webcache.googleusercontent.com/search?cd=1&hl=en&ct=clnk&gl=us&q=cache:http://".$_GIVEN_URL;
+                    echo '<script>exportableData = '.json_encode($seostats).';</script>';
+                }else{
+                    $html = getSeoStats($_GIVEN_URL, 'json');
+                    $seostats = (array) json_decode($html);
+                    echo '<script>exportableData = '.$html.';</script>';
+
+                    $data_array = array();
+                    $data_array["url"] = $_GIVEN_URL;
+                    $data_array["alexa_rank"] = $seostats["rank"]->alexa_traffic_rank;
+                    $data_array["google_page_rank"] = $seostats["rank"]->google_page_rank;
+                    $data_array["quantcast_traffic_rank"] = $seostats["rank"]->quantcast_traffic_rank;
+
+                    $data_array["alexa_rank_in_country"] = (string) json_encode($seostats["rank"]->alexa_rank_in_country);
+
+                    $data_array["bounce_rate"] = $seostats["site_metrics"]->bounce_rate;
+                    $data_array["dailytime_onsite"] = $seostats["site_metrics"]->dailytime_onsite;
+                    $data_array["daily_pageviews_per_visitor"] = $seostats["site_metrics"]->daily_pageviews_per_visitor;
+
+
+                    $data_array["backlinks_alexa"] = $seostats["backlinks"]->alexa;
+                    $data_array["backlinks_google"] = $seostats["backlinks"]->google;
+                    $data_array["backlinks_open_site_explorer"] = $seostats["backlinks"]->open_site_explorer;
+                    $data_array["backlinks_sogou"] = $seostats["backlinks"]->sogou;
+                    // $data_array["backlinks_ahrefs"] = $seostats["backlinks"]->ahrefs;
+
+                    $data_array["page_indexed_ask"] = $seostats["pages_indexed"]->ask;
+                    $data_array["page_indexed_baidu"] = $seostats["pages_indexed"]->baidu;
+                    $data_array["page_indexed_bing"] = $seostats["pages_indexed"]->bing;
+                    $data_array["page_indexed_goo"] = $seostats["pages_indexed"]->goo;
+                    $data_array["page_indexed_google"] = $seostats["pages_indexed"]->google;
+                    $data_array["page_indexed_sogou"] = $seostats["pages_indexed"]->sogou;
+                    $data_array["page_indexed_yahoo"] = $seostats["pages_indexed"]->yahoo;
+                    $data_array["page_indexed_yandex"] = $seostats["pages_indexed"]->yandex;
+
+                    if( !empty($seostats["pages_indexed"]->_360) ){
+                        $data_array["page_indexed__360"] = $seostats["pages_indexed"]->_360;
+                    }
+
+                    $temp = $seostats["site_metrics"]->bounce_rate;
+
+                    $data_array["bounce_rate"] = $temp == "" ? 0 : $temp;
+                    $data_array["dailytime_onsite"] = $seostats["site_metrics"]->dailytime_onsite;
+                    $data_array["daily_pageviews_per_visitor"] = $seostats["site_metrics"]->daily_pageviews_per_visitor;
+                    $status = save_this_activity($_GIVEN_URL, $data_array);
+                    $data_array["cached"] = array(
+                        "archive" => "https://web.archive.org/web/*/".$_GIVEN_URL,
+                        "google" => "http://webcache.googleusercontent.com/search?cd=1&hl=en&ct=clnk&gl=us&q=cache:".$_GIVEN_URL
+                    );
+                    echo '<script>exportableData = '.json_encode($data_array).';</script>';
+                    
+                }
+                
+            }
+        ?>
         <section class="content">
             <div class="row" style="margin-bottom: 20px;">
                 <div class="col-md-12">
