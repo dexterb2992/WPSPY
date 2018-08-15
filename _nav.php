@@ -27,7 +27,7 @@
 	if (!function_exists('wpspyGetHost')) {
 		function wpspyGetHost($address) { 
 		   $parseUrl = parse_url(trim($address)); 
-		   return trim($parseUrl['host'] ? $parseUrl['host'] : array_shift(explode('/', $parseUrl['path'], 2))); 
+		   return trim(!empty($parseUrl['host']) ? $parseUrl['host'] : @array_shift(explode('/', $parseUrl['path'], 2))); 
 		} 
 	}
 

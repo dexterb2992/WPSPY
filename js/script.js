@@ -2668,6 +2668,21 @@ $(document).ready(function() {
 		    	$(".connectedSortable").sortable({
 					connectWith: ".connectedSortable"
 				});
+
+				$(document).on("click", ".external-links-tbody .btn-collapse, .internal-links-tbody .btn-collapse", function (){
+				    var $this = $(this),
+				    	$tbody = $this.closest("tbody"),
+				    	_children = $tbody.children("tr:not(':first')"),
+				    	_icon = $this.children('i');
+
+				    if (_children.is(":visible")){
+				        _children.fadeOut();
+				        _icon.attr("class", "fa fa-plus")
+				    } else {
+				        _children.fadeIn();
+				        _icon.attr("class", "fa fa-minus")
+				    }
+				});
 		    });
 
 		})(jQuery);

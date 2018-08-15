@@ -1644,11 +1644,7 @@ select#choose_traffic_graph {
     max-width: 24px;
 }
 
-.tbl-links tr>td:nth-child(2) {
-    max-width: 100px;
-}
-
-.tbl-links tr>td:nth-child(3) {
+.tbl-links tr>td:nth-child(2), .tbl-links tr>td:nth-child(2) {
     max-width: 100px;
     overflow: hidden;
 }
@@ -1658,5 +1654,5 @@ select#choose_traffic_graph {
 }
 
 .internal-links-tbody td {
-    background-color: #f2dede;
+    background-color: #d9edf7;
 }

@@ -3,20 +3,22 @@
 	include plugin_dir_path( __FILE__ )."classes/config.php";
 	include plugin_dir_path( __FILE__ )."classes/dbhelper.php";
 	include plugin_dir_path( __FILE__ )."classes/data.php";
-			
-	if( isset($_GET['url']) && trim($_GET['url']) != "" ){
-		$_url = $_GIVEN_URL;
-		
-		$links = getLinks($_url);
-		echo '<script>exportableData = '.json_encode($links).';</script>';
-		$data_array = array();
-	}
 ?>
 
 <div class="wrapper">
     <!-- Content Wrapper. Contains page content -->
     <div>
-        <?php include "_nav.php"; ?>
+        <?php
+        	include "_nav.php";
+
+        	if( isset($_GET['url']) && trim($_GET['url']) != "" ){
+				$_url = $_GIVEN_URL;
+				
+				$links = getLinks($_url);
+				echo '<script>exportableData = '.json_encode($links).';</script>';
+				$data_array = array();
+			}
+        ?>
         <section class="content">
             <div class="row" style="margin-bottom: 20px;">
                 <div class="col-md-12">
@@ -38,8 +40,9 @@
                                 External &amp; Internal Links
                             </h3>
                         </div>
-                        <div class="box-body table-responsive">
-                            <table class="table table-bordered table-striped tbl-links">
+                        <div class="box-body no-padding"></div>
+                        <div class="box-footer no-border table-responsive">
+                        	<table class="table table-bordered table-striped tbl-links">
 								<thead>
 									<tr>
 										<th>#</th>
@@ -59,6 +62,10 @@
 													<?php echo isset($links["external_links"]["links"]) ? $links["external_links"]["nofollow"] : '0';   ?>
 												</span> nofollow)
 											</strong>
+
+											<a href="javascript:void(0)" class="btn-collapse btn btn-xs text-green pull-right" style="margin-right: 5px" data-toggle="tooltip" data-original-title="Collapse">
+												<i class="fa fa-minus"></i>
+											</a>
 										</td>
 									</tr>
 									<?php  
@@ -101,7 +108,7 @@
 								<tbody class="internal-links-tbody">
 									<tr class="internal-links-outer-row">
 										<td colspan="3">
-											<strong class="text-maroon">
+											<strong class="text-aqua">
 												Internal links: 
 												<span id="internal_links_count">
 													<?php echo isset($links["internal_links"]["links"]) ? count($links["internal_links"]["links"]) : '';   ?>
@@ -110,6 +117,10 @@
 													<?php echo isset($links["internal_links"]["links"]) ? $links["internal_links"]["nofollow"] : '0';   ?>
 												</span> nofollow)
 											</strong>
+
+											<a href="javascript:void(0)" class="btn-collapse btn btn-xs text-aqua pull-right" style="margin-right: 5px" data-toggle="tooltip" data-original-title="Collapse">
+												<i class="fa fa-minus"></i>
+											</a>
 										</td>
 									</tr>
 									<?php 
@@ -132,7 +143,6 @@
 								</tbody>
 							</table>
                         </div>
-                        <div class="box-footer no-border"></div>
                     </div>
 
                     <!-- BACKLINKS -->
@@ -148,7 +158,7 @@
 		                        Backinks
 		                    </h3>
 		                </div>
-		                <div class="box-body">
+		                <div class="box-body no-padding">
 		                    
 		                </div>
 		                <div class="box-footer no-border">
@@ -197,14 +207,14 @@
 
             	<div class="col-lg-5 connectedSortable">
             		<!-- SEARCH ENGINE RESULTS -->
-                    <div class="box box-solid bg-maroon-gradient search-engine-results">
+                    <div class="box box-solid bg-yellow-gradient search-engine-results">
                         <div class="box-header">
-                            <i class="fa fa-search"></i>
+                            <i class="fa fa-globe"></i>
                             <h3 class="box-title">
-		                        Search engine Results
+		                        Search Engine Results
 		                    </h3>
                             <div class="pull-right box-tools">
-                                <button type="button" class="btn bg-maroon btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
+                                <button type="button" class="btn btn-warning btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
                                 </button>
                             </div>
                         </div>
@@ -218,21 +228,21 @@
                                 	<div class="entry">
 										<div class="left">Google</div>
 										<div class="right">	
-											<a class="<?php echo !empty($_url) ? 'spy-icon-eye spy-icon' : ''; ?>" target="_blank" href="<?php echo !empty($_url) ? 'http://www.google.com/search?q=site%3A+'.urlencode($_GIVEN_URL_DOMAIN) : '#'; ?>" data-link="http://www.google.com/search?q=site%3A+" id="google_search_results"></a>
+											<a class="<?php echo !empty($_url) ? 'spy-icon-eye spy-icon' : ''; ?>" target="_blank" href="<?php echo !empty($_url) ? 'http://www.google.com/search?q=site%3A'.urlencode($_GIVEN_URL_DOMAIN) : '#'; ?>" data-link="http://www.google.com/search?q=site%3A" id="google_search_results"></a>
 										</div>
 									</div>
 
 									<div class="entry">
 										<div class="left">Bing</div>
 										<div class="right">	
-											<a class="<?php echo !empty($_url) ? 'spy-icon-eye spy-icon' : ''; ?>" target="_blank" href="<?php echo !empty($_url) ? 'http://www.bing.com/search?q=site%3A+'.urlencode($_GIVEN_URL_DOMAIN).'&go=Submit' : '#'; ?>" data-link="http://www.bing.com/search?q=site%3A+" id="bing_search_results"></a>
+											<a class="<?php echo !empty($_url) ? 'spy-icon-eye spy-icon' : ''; ?>" target="_blank" href="<?php echo !empty($_url) ? 'http://www.bing.com/search?q=site%3A'.urlencode($_GIVEN_URL_DOMAIN).'&go=Submit' : '#'; ?>" data-link="http://www.bing.com/search?q=site%3A" id="bing_search_results"></a>
 										</div>
 									</div>
 
 									<div class="entry">
 										<div class="left">Yahoo</div>
 										<div class="right">	
-											<a class="<?php echo !empty($_url) ? 'spy-icon-eye spy-icon' : ''; ?>" target="_blank" href="<?php echo !empty($_url) ? 'http://search.yahoo.com/?p=site:%20+'.urlencode($_GIVEN_URL_DOMAIN).'&go=Submit' : '#'; ?>" data-link="http://search.yahoo.com/?p=site:%20+" id="yahoo_search_results"></a>
+											<a class="<?php echo !empty($_url) ? 'spy-icon-eye spy-icon' : ''; ?>" target="_blank" href="<?php echo !empty($_url) ? 'http://search.yahoo.com/?p=site:+'.urlencode($_GIVEN_URL_DOMAIN).'&go=Submit' : '#'; ?>" data-link="http://search.yahoo.com/?p=site:+" id="yahoo_search_results"></a>
 										</div>
 									</div>
 
