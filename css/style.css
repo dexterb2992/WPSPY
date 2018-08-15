@@ -845,7 +845,7 @@
   }
 
   .anchor-text {
-    width: 64px;
+    width: 100%;
     height: 64px;
     overflow: hidden;
   }
@@ -1635,4 +1635,28 @@ select#choose_traffic_graph {
 
 .modal {
     padding-top: 20px;
+}
+
+.tbl-links td {
+    max-width: 100px;
+}
+.tbl-links tr>td:nth-child(1) {
+    max-width: 24px;
+}
+
+.tbl-links tr>td:nth-child(2) {
+    max-width: 100px;
+}
+
+.tbl-links tr>td:nth-child(3) {
+    max-width: 100px;
+    overflow: hidden;
+}
+
+.external-links-tbody td {
+    background-color: #dff0d8;
+}
+
+.internal-links-tbody td {
+    background-color: #f2dede;
 }

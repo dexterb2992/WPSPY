@@ -27,10 +27,10 @@
             <!-- INTERNAL & EXTERNAL LINKS -->
             <div class="row">
             	<div class="col-lg-7 connectedSortable">
-            		<div class="box box-solid box-warning ie-links">
+            		<div class="box box-solid box-info ie-links">
                         <div class="box-header">
                             <div class="pull-right box-tools">
-                                <button type="button" class="btn bg-orange btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="Collapse" style="margin-right: 5px;">
+                                <button type="button" class="btn bg-primary btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="Collapse" style="margin-right: 5px;">
                                 <i class="fa fa-minus"></i></button>
                             </div>
                             <i class="fa fa-external-link"></i>
@@ -47,22 +47,20 @@
 										<th>Anchor Text</th>
 									</tr>
 								</thead>
-								<tbody>
-									<thead>
-										<tr class="external-links-outer-row">
-											<td colspan="3">
-												<strong class="text-green">
-													External links: 
-													<span id="external_links_count">
-														<?php echo isset($links["external_links"]["links"]) ? count($links["external_links"]["links"]) : '';   ?>	
-													</span>
-													(<span id="external_nofollow_count">
-														<?php echo isset($links["external_links"]["links"]) ? $links["external_links"]["nofollow"] : '0';   ?>
-													</span> nofollow)
-												</strong>
-											</td>
-										</tr>
-									</thead>
+								<tbody class="external-links-tbody">
+									<tr class="external-links-outer-row">
+										<td colspan="3">
+											<strong class="text-green">
+												External links: 
+												<span id="external_links_count">
+													<?php echo isset($links["external_links"]["links"]) ? count($links["external_links"]["links"]) : '';   ?>	
+												</span>
+												(<span id="external_nofollow_count">
+													<?php echo isset($links["external_links"]["links"]) ? $links["external_links"]["nofollow"] : '0';   ?>
+												</span> nofollow)
+											</strong>
+										</td>
+									</tr>
 									<?php  
 										$data_array["external_links"] = json_encode(
 											array(
@@ -100,22 +98,20 @@
 										}
 									?>
 								</tbody>
-								<tbody>
-									<thead>
-										<tr class="internal-links-outer-row">
-											<td colspan="3">
-												<strong class="text-maroon">
-													Internal links: 
-													<span id="internal_links_count">
-														<?php echo isset($links["internal_links"]["links"]) ? count($links["internal_links"]["links"]) : '';   ?>
-													</span>
-													(<span id="internal_nofollow_count">
-														<?php echo isset($links["internal_links"]["links"]) ? $links["internal_links"]["nofollow"] : '0';   ?>
-													</span> nofollow)
-												</strong>
-											</td>
-										</tr>
-									</thead>
+								<tbody class="internal-links-tbody">
+									<tr class="internal-links-outer-row">
+										<td colspan="3">
+											<strong class="text-maroon">
+												Internal links: 
+												<span id="internal_links_count">
+													<?php echo isset($links["internal_links"]["links"]) ? count($links["internal_links"]["links"]) : '';   ?>
+												</span>
+												(<span id="internal_nofollow_count">
+													<?php echo isset($links["internal_links"]["links"]) ? $links["internal_links"]["nofollow"] : '0';   ?>
+												</span> nofollow)
+											</strong>
+										</td>
+									</tr>
 									<?php 
 										if( isset($links["internal_links"]["links"]) ){
 											$x = 1;
