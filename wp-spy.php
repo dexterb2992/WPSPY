@@ -123,6 +123,7 @@ function wpspy_admin_scripts() {
     wp_register_script( 'export', plugins_url( '/js/export.js', __FILE__ ) );
     wp_register_script( 'script', plugins_url( '/js/script.js', __FILE__ ) );
     wp_register_script( 'bootstrapjs', plugins_url( '/assets/bootstrap/js/bootstrap.min.js', __FILE__ ) );
+    wp_register_script( 'select2js', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js' );
     wp_register_script( 'admin_lte', plugins_url( '/assets/dist/js/app.min.js', __FILE__ ) );
 
     /* Register style sheet. */
@@ -131,9 +132,10 @@ function wpspy_admin_scripts() {
     wp_register_style( 'jquery-ui', plugins_url( '/css/jquery-ui.css', __FILE__ ) );
     wp_register_style( 'jquery-ui-css-cdn', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css');
     wp_register_style( 'wpspy-style', plugins_url( '/css/style.css', __FILE__ ) );
-    wp_register_style( 'bootstrap', plugins_url('/assets/bootstrap/css/bootstrap.min.css', __FILE__ ));
-    wp_register_style( 'ionicons', plugins_url('/assets/Ionicons/css/ionicons.min.css', __FILE__));
-    wp_register_style( 'admin-lte', plugins_url('/assets/dist/css/AdminLTE.min.css', __FILE__ ));
+    wp_register_style( 'bootstrap', plugins_url( '/assets/bootstrap/css/bootstrap.min.css', __FILE__ ) );
+    wp_register_style( 'ionicons', plugins_url( '/assets/Ionicons/css/ionicons.min.css', __FILE__ ) );
+    wp_register_style( 'select2css', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css' );
+    wp_register_style( 'admin-lte', plugins_url( '/assets/dist/css/AdminLTE.min.css', __FILE__ ) );
 
     /* Link our already registered script to a page */
     wp_enqueue_script( 'FileSaver' );
@@ -152,6 +154,7 @@ function wpspy_admin_scripts() {
     wp_enqueue_script( 'script' );
     wp_enqueue_script( 'export' );
     wp_enqueue_script( 'bootstrapjs' );
+    wp_enqueue_script( 'select2js' );
     wp_enqueue_script( 'admin_lte' );
 
 
@@ -163,6 +166,7 @@ function wpspy_admin_scripts() {
     wp_enqueue_style( 'wpspy-style' );
     wp_enqueue_style( 'bootstrap' );
     wp_enqueue_style( 'ionicons' );
+    wp_enqueue_style( 'select2css' );
     wp_enqueue_style( 'admin-lte' );
 
 

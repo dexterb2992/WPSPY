@@ -72,7 +72,7 @@
                     <!-- PAGE INFO -->
                     <div class="box box-solid bg-green-gradient page-info">
                         <div class="box-header">
-                            <i class="fa fa-binoculars"></i>
+                            <i class="ion ion-document-text"></i>
                             <h3 class="box-title">Page Info</h3>
                             <!-- tools box -->
                             <div class="pull-right box-tools">

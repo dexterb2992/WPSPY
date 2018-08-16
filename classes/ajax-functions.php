@@ -70,7 +70,7 @@ function get_chart_data($url, $column){
 	foreach ($res as $r) {
 		$d = strtotime( $r->activity_date );
 		$val = (int) str_replace(",", "", $r->$column);
-		array_push( $date, array("label" => date( 'M j, Y, g:i a', $d )) );
+		array_push( $date, array("label" => date( 'm/d/Y, H:i', $d )) );
 		array_push( $values, array("value" => $val) );
 	}
 

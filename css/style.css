@@ -1655,3 +1655,7 @@ select#choose_traffic_graph {
 .internal-links-tbody td {
     background-color: #d9edf7;
 }
+
+.chart-options select {
+  height: 35px;
+}

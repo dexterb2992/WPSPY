@@ -251,7 +251,7 @@
                     <!-- SITE SECURITY -->
                     <div class="box box-solid bg-blue-gradient site-security">
                         <div class="box-header">
-                            <i class="fa fa-lock"></i>
+                            <i class="ion ion-android-lock"></i>
                             <h3 class="box-title">Site Security</h3>
                             <!-- tools box -->
                             <div class="pull-right box-tools">
