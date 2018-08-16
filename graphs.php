@@ -20,26 +20,22 @@
 
             <div class="row">
                 <section class="col-lg-10">
-                    <!-- PAGE INFO -->
-                    <div class="box box-solid bg-green-gradient page-info">
+                    <!-- GRAPHS -->
+                    <div class="box box-solid bg-green-gradient graphs">
                         <div class="box-header">
                             <i class="ion ion-stats-bars"></i>
                             <h3 class="box-title">Graphs</h3>
-                            <!-- tools box -->
                             <div class="pull-right box-tools">
                                 <button type="button" class="btn btn-success btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
                                 </button>
                             </div>
-                            <!-- /. tools -->
                         </div>
-                        <!-- /.box-header -->
                         <div class="box-body no-padding">
                         </div>
-                        <!-- /.box-body -->
                         <div class="box-footer text-black">
-                            <div class="chart-options">
-								<div class="sites">
-									<select id="compare_sites" class="select2">
+                            <div class="row">
+								<div class="col-md-3">
+									<select id="compare_sites" class="select2 form-control">
 									<?php 
 										$sites = get_sites();
 										$x = 0;
@@ -50,7 +46,9 @@
 										}
 									?>
 									</select>
-									<select id="compare_sites2" class="select2">
+								</div>
+								<div class="col-md-3">
+									<select id="compare_sites2" class="select2 form-control">
 									<?php 
 										$sites = get_sites();
 										$x = 0;
@@ -62,8 +60,9 @@
 									?>
 									</select>	
 								</div>
-								<div class="data-type">
-									<select id="chart_options" class="select2">
+
+								<div class="col-md-2">
+									<select id="chart_options" class="select2 form-control">
 										<optgroup label="SEO Metrics">
 											<option value="alexa_rank" selected>Alexa Rank</option>
 											<option value="backlinks_alexa">Alexa Backlinks</option>
@@ -79,7 +78,8 @@
 										</optgroup>
 									</select>
 								</div>
-								<div class="update">
+
+								<div class="col-md-2">
 									<a href="javascript:void(0);" class="btn bg-maroon" id="update_chart">
 										<i class="fa fa-line-chart"></i> Compare Sites
 									</a>

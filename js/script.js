@@ -1613,8 +1613,14 @@ $(document).ready(function () {
 
 		} else {
 			e.preventDefault();
-			btn.after('<span class="red">Oops! That\'s not a good url.</span>');
-			btn.next('span').fadeOut(4000, function () {
+			var $error = $('<span class="red error">Oops! That\'s not a good url.</span>');
+			var $inputGroup = btn.parents('div.input-group');
+			if ($inputGroup.next('span.error').length) {
+				$inputGroup.next('span.error').replaceWith($error);
+			} else {
+				$inputGroup.after($error);
+			}
+			$error.fadeOut(4000, function () {
 				$(this).remove();
 			});
 			enable_button(btn, "Go");
