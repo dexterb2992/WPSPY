@@ -59,20 +59,31 @@ $(document).ready(function () {
 
 	setTimeout(function () {}, 10);
 
-	function onLoadingState(classSelector) {
+	function onLoadingState(classSelector, collapseContent) {
+		if (typeof(collapseContent) == 'undefined') {
+			collapseContent = true;
+		}
 		$(classSelector + ' .box-title').append('<span class="success thin"> (<i class="fa fa-spinner fa-spin"></i> Loading data...)</span>');
-		$(classSelector + ' button[data-widget="collapse"]').click();
-		console.log(classSelector + " onLoadingState");
+		
+		if (collapseContent) {
+			$(classSelector + ' button[data-widget="collapse"]').click();
+		}
 	}
 
-	function removeLoadingState(classSelector) {
+	function removeLoadingState(classSelector, collapseContent) {
 		$(classSelector + ' .box-title .success').fadeOut(function () {
 			$(this).remove();
 		});
-		if (!$(classSelector + ' .entry').is(":visible")) {
-			$(classSelector + ' button[data-widget="collapse"]').click();
+
+		if (typeof(collapseContent) == 'undefined') {
+			collapseContent = true;
 		}
-		console.log(classSelector + " removeLoadingState");
+
+		if (collapseContent) {
+			if (!$(classSelector + ' .entry').is(":visible")) {
+				$(classSelector + ' button[data-widget="collapse"]').click();
+			}
+		}
 	}
 
 	function infoBoxOnLoadingState(classSelector) {
@@ -171,6 +182,12 @@ $(document).ready(function () {
 		}
 	}
 
+	function showHistoryModal(title, html) {
+		$("#history_dialog .modal-body").html('<div class="row">'+html+'</div>');
+		$("#history_dialog .modal-title").text(title);
+		$("#history_dialog").modal("show");
+	}
+
 
 	sidebarInit();
 
@@ -197,6 +214,7 @@ $(document).ready(function () {
 	var x = 1;
 	/** Initialize our datatables here */
 	var history_table = $('#history').DataTable({
+		responsive: true,
 		ajax: {
 			url: ajaxurl,
 			type: 'post',
@@ -239,6 +257,8 @@ $(document).ready(function () {
 		disable_button(btn, "Please wait..");
 		domain = check_url(domain);
 
+		$("#wpspy_url").val(domain);
+
 		exportableData = {};
 
 
@@ -260,7 +280,7 @@ $(document).ready(function () {
 			$(".wpspy-content").append('<div class="loading"><div class="center">Grabbing data all over the web...</div></div>');
 
 			// site-info page
-			if (page === "site-info") {
+			if (page == "site-info") {
 				// let's disable the button to prevent submitting more than once
 				disable_button(btn, "Please wait..");
 
@@ -645,7 +665,7 @@ $(document).ready(function () {
 					}
 				});
 
-			} else if (page === "page-info") {
+			} else if (page == "page-info") {
 				disable_button(btn, "Please wait...");
 				progress_limit = 1;
 
@@ -980,7 +1000,7 @@ $(document).ready(function () {
 				}
 
 
-			} else if (page === "links") {
+			} else if (page == "links") {
 				e.preventDefault();
 
 				progress_limit = 1;
@@ -1121,7 +1141,7 @@ $(document).ready(function () {
 						alert("Something went wrong while trying get Internal and External Links for " + domain_raw + " \nPlease try again later or contact customer support.");
 					}
 				});
-			} else if (page === "seo-stats") {
+			} else if (page == "seo-stats") {
 				e.preventDefault();
 				disable_button(btn, 'Please wait...');
 
@@ -1372,7 +1392,7 @@ $(document).ready(function () {
 				});
 
 
-			} else if (page === "social-stats") {
+			} else if (page == "social-stats") {
 				e.preventDefault();
 				disable_button(btn, "Please wait...");
 
@@ -1478,7 +1498,7 @@ $(document).ready(function () {
 				});
 
 
-			} else if (page === "traffic") {
+			} else if (page == "traffic") {
 				progress_limit = 1;
 
 				$.ajax({
@@ -1553,8 +1573,7 @@ $(document).ready(function () {
 					progress_current++;
 					check_progress(progress_limit, progress_current);
 				});
-			} else if (page === "previous-searches") {
-				disable_button(btn, "Please wait...");
+			} else if (page == "previous-searches") {
 				var content = "";
 				progress_limit = 1;
 
@@ -1566,38 +1585,49 @@ $(document).ready(function () {
 						action: 'wpspy_ajax',
 						url: $('#wpspy_url').val(),
 						q: 'get_history_list'
+					},
+					beforeSend: function () {
+						disable_button(btn, "Please wait...");
+						onLoadingState(".history", false);
+					},
+					complete: function () {
+						removeLoadingState(".history", false);
+						enable_button(btn, "Go");
+						progress_current++;
+						check_progress(progress_limit, progress_current);
+					},
+					success: function (data) {
+						history_table.clear();
+					    history_table.rows.add(data.data);
+					    history_table.draw();
+
+						/*$.each(data.data, function (i, row) {
+							content += '<tr><td>' + row[0] + '</td><td>' + row[1] + '</td></tr>';
+						});
+
+						$("#div_page_info_history, #history").html("");
+						var tbl = '<table id="page_info_history2" class="table tbl-page-info">' +
+							'<thead>' +
+							'<tr>' +
+							'<th>Date</th>' +
+							'<th>Action</th>' +
+							'</tr>' +
+							'</thead>' +
+							'<tbody>' + content + '</tbody>' +
+							'</table>';
+
+						$("#div_page_info_history").html(tbl);
+
+						if ($("#page_info_history2 body").html() != "") {
+							var data_tbl = $('#page_info_history2').DataTable();
+							$("#div_history_table_outer").html($("#div_page_info_history").html());
+						}*/
+					},
+					error: function (data) {
+						console.warn(data);
 					}
-				}).done(function (data) {
-					$.each(data.data, function (i, row) {
-						content += '<tr><td>' + row[0] + '</td><td>' + row[1] + '</td></tr>';
-					});
-
-					$("#div_page_info_history, #history").html("");
-					var tbl = '<table id="page_info_history2" class="table tbl-page-info">' +
-						'<thead>' +
-						'<tr>' +
-						'<th>Date</th>' +
-						'<th>Action</th>' +
-						'</tr>' +
-						'</thead>' +
-						'<tbody>' + content + '</tbody>' +
-						'</table>';
-
-					$("#div_page_info_history").html(tbl);
-
-					if ($("#page_info_history2 body").html() !== "") {
-						var data_tbl = $('#page_info_history2').DataTable();
-						$("#div_history_table_outer").html($("#div_page_info_history").html());
-					}
-
-					enable_button(btn, "Go");
-					progress_current++;
-					check_progress(progress_limit, progress_current);
-				}).fail(function () {
-					progress_current++;
-					check_progress(progress_limit, progress_current);
 				});
-			} else if (page === "graphs") {
+			} else if (page == "graphs") {
 				progress_limit = 1;
 
 				$(".chart-options select").children('option').removeAttr("selected")
@@ -1671,9 +1701,10 @@ $(document).ready(function () {
 	});
 
 	$(document).on("click", "a.history-actions", function () {
-		var $this = $(this);
-		var domain_raw = $("#wpspy_url").val();
-		var $option = $this.data('action');
+		var $this = $(this),
+			domain_raw = $("#wpspy_url").val(),
+			$option = $this.data('action'),
+			_finalHtml = "";
 
 		$.ajax({
 			url: ajaxurl,
@@ -1688,7 +1719,7 @@ $(document).ready(function () {
 		}).success(function (data) {
 			console.log(data);
 
-			if ($option === "site_info") {
+			if ($option == "site_info") {
 				$("#history_data .dns").html('');
 				var whois = '',
 					wordpress_data = '',
@@ -1701,48 +1732,48 @@ $(document).ready(function () {
 				var sitemap = (data[0].sitemap_index === 'true') ? '<span class="spy-icon-check spy-icon"></span>' : '<span>N/A</span>';
 				var robot = (data[0].robot === 'true') ? '<span class="spy-icon-check spy-icon"></span>' : '<span>N/A</span>';
 				onsite = '<div class="on-site box">' +
-					'<div class="title">On-site</div>' +
-					'<div class="content">' +
-					'<div class="entry">' +
-					'<div class="left"><span class="spy-icon spy-icon-robots"></span>robots.txt</div>' +
-					'<div class="right">' + robot + '</div>' +
-					'</div>' +
-					'<div class="entry">' +
-					'<div class="left"><span class="spy-icon spy-icon-sitemap"></span>sitemap_index.xml</div>' +
-					'<div class="right">' + sitemap + '</div>' +
-					'</div>' +
-					'</div>' +
-					'</div>';
+							'<div class="title">On-site</div>' +
+							'<div class="content">' +
+								'<div class="entry">' +
+									'<div class="left"><span class="spy-icon spy-icon-robots"></span>robots.txt</div>' +
+									'<div class="right">' + robot + '</div>' +
+								'</div>' +
+								'<div class="entry">' +
+									'<div class="left"><span class="spy-icon spy-icon-sitemap"></span>sitemap_index.xml</div>' +
+									'<div class="right">' + sitemap + '</div>' +
+								'</div>' +
+							'</div>' +
+						'</div>';
 				whois = '<div class="geolocation box">' +
-					'<div class="title">Geolocation</div>' +
-					'<div class="content">' +
-					'<div class="entry">' +
-					'<div class="left">' +
-					'<span class="spy-icon spy-icon-ip"></span>IP' +
-					'</div>' +
-					'<div class="right">' +
-					'<span id="ip">' + data[0].ip + '</span>' +
-					'</div>' +
-					'</div>' +
-					'<div class="entry">' +
-					'<div class="left">' +
-					'<span class="spy-icon spy-icon-city"></span>City' +
-					'</div>' +
-					'<div class="right">' +
-					'<span id="city">' + data[0].city + '</span>' +
-					'</div>' +
-					'</div>' +
-					'<div class="entry">' +
-					'<div class="left">' +
-					'Country' +
-					'</div>' +
-					'<div class="right">' +
-					'<span id="city">' + data[0].country + '</span>' +
-					'<span class="flag flag-' + data[0].country_code + '"></span>' +
-					'</div>' +
-					'</div>' +
-					'</div>' +
-					'</div>';
+							'<div class="title">Geolocation</div>' +
+							'<div class="content">' +
+								'<div class="entry">' +
+									'<div class="left">' +
+										'<span class="spy-icon spy-icon-ip"></span>IP' +
+									'</div>' +
+									'<div class="right">' +
+										'<span id="ip">' + data[0].ip + '</span>' +
+									'</div>' +
+								'</div>' +
+								'<div class="entry">' +
+									'<div class="left">' +
+										'<span class="spy-icon spy-icon-city"></span>City' +
+									'</div>' +
+									'<div class="right">' +
+										'<span id="city">' + data[0].city + '</span>' +
+									'</div>' +
+								'</div>' +
+								'<div class="entry">' +
+									'<div class="left">' +
+										'Country' +
+									'</div>' +
+									'<div class="right">' +
+										'<span id="city">' + data[0].country + '</span>' +
+										'<span class="flag flag-' + data[0].country_code + '"></span>' +
+									'</div>' +
+								'</div>' +
+							'</div>' +
+						'</div>';
 
 				var wp_data = JSON.parse(data[0].wordpress_data);
 				console.log(wp_data);
@@ -1837,14 +1868,9 @@ $(document).ready(function () {
 				dns = '<div class="box dns"><div class="title">Domain Info</div><div class="content">' + dns + '</div></div>';
 				var history_data = $("#history_data").html();
 
-				$("#dialog").html('<div class="col-5">' + onsite + dns + '</div><div class="col-5">' + whois + history_data + '</div>');
+				_finalHtml = '<div class="col-md-5">' + onsite + dns + '</div><div class="col-md-5">' + whois + history_data + '</div>';
 
-				$("#dialog").attr("title", $this.text()).dialog({
-					height: 440,
-					width: 910,
-					modal: true
-				});
-			} else if ($option === "page_info") {
+			} else if ($option == "page_info") {
 				try {
 					// append data to html body
 					$("#page_info_history_hidden tbody").html("");
@@ -1874,40 +1900,34 @@ $(document).ready(function () {
 				} catch (e) {
 					console.log(e);
 				}
-				$("#dialog").html("");
-				$("#dialog").html('<div class="box">' + $("#div_page_info_history_hidden").html() + '</div>');
-				$(".ui-dialog-title").html($this.text());
-				$("#dialog").attr("title", $this.text()).dialog({
-					height: 440,
-					width: 910,
-					modal: true
-				});
+				_finalHtml = '<div class="col-md-12"><div class="box">'+
+					$("#div_page_info_history_hidden").html() + '</div></div>';
 
 
-			} else if ($option === "seo_stats") {
+			} else if ($option == "seo_stats") {
 				var rank = '<div class="box rank">' +
-					'<div class="title">Rank</div>' +
-					'<div class="content">' +
-					'<div class="entry">' +
-					'<div class="left">' +
-					'<span class="spy-icon-alexa spy-icon"></span>' +
-					'Alexa Traffic Rank' +
-					'</div>' +
-					'<div class="right">' +
-					'<span id="alexa_rank">' + data[0].alexa_rank + '</span>' +
-					'</div>' +
-					'</div>' +
-					'<div class="entry">' +
-					'<div class="left">' +
-					'<span class="spy-icon-quantcast spy-icon"></span>' +
-					'Quantcast Traffic Rank' +
-					'</div>' +
-					'<div class="right">' +
-					'<span id="quantcast_traffic">' + data[0].quantcast_traffic_rank + '</span>' +
-					'</div>' +
-					'</div>' +
-					'</div>' +
-					'</div>';
+								'<div class="title">Rank</div>' +
+								'<div class="content">' +
+									'<div class="entry">' +
+										'<div class="left">' +
+											'<span class="spy-icon-alexa spy-icon"></span>' +
+											'Alexa Traffic Rank' +
+										'</div>' +
+										'<div class="right">' +
+											'<span id="alexa_rank">' + data[0].alexa_rank + '</span>' +
+										'</div>' +
+									'</div>' +
+									'<div class="entry">' +
+										'<div class="left">' +
+											'<span class="spy-icon-quantcast spy-icon"></span>' +
+											'Quantcast Traffic Rank' +
+										'</div>' +
+										'<div class="right">' +
+											'<span id="quantcast_traffic">' + data[0].quantcast_traffic_rank + '</span>' +
+										'</div>' +
+									'</div>' +
+								'</div>' +
+							'</div>';
 				var pages_indexed_arr = [
 					"page_indexed_ask", "page_indexed_baidu", "page_indexed_bing", "page_indexed_goo",
 					"page_indexed_google", "page_indexed_sogou", "page_indexed_yahoo", "page_indexed_yandex",
@@ -1980,14 +2000,9 @@ $(document).ready(function () {
 
 				backlinks = '<div class="box backlinks"><div class="title">Backlinks</div><div class="content">' + backlinks + '</div></div>';
 
-				$("#dialog").html('<div class="col-4">' + rank + backlinks + '</div><div class="col-4">' + fi_pages_indexed + '</div>');
+				_finalHtml = '<div class="col-md-4">' + rank + backlinks + '</div><div class="col-md-4">' + fi_pages_indexed + '</div>';
 
-				$("#dialog").attr("title", $this.text()).dialog({
-					height: 440,
-					width: 910,
-					modal: true
-				});
-			} else if ($option === "social_stats") {
+			} else if ($option == "social_stats") {
 				data = data[0];
 				$("#facebook_likes").html(data.facebook_count);
 				$("#gplus").html(data.google_count);
@@ -2005,23 +2020,18 @@ $(document).ready(function () {
 				$("#passion").html(data.score_passion);
 				$("#reach").html(data.score_reach);
 
-				$("#dialog").html('<div class="col-4"><div class="box">' + $("#div_social_stats_history").html() +
-					'</div></div><div class="col-4"><div class="box">' +
+				_finalHtml = '<div class="col-md-4"><div class="box">' + $("#div_social_stats_history").html() +
+					'</div></div><div class="col-md-4"><div class="box">' +
 					$("#div_social_metrics_history").html() +
-					'</div></div>');
-				$(".ui-dialog-title").html($this.text());
-				$("#dialog").attr("title", $this.text()).dialog({
-					height: 440,
-					width: 910,
-					modal: true
-				});
-			} else if ($option === "traffic") {
+					'</div></div>';
+				
+			} else if ($option == "traffic") {
 				data = data[0];
 				$("#alexa_rank").html(data.alexa_rank);
 				$("#quantcast_traffic_rank").html(data.quantcast_traffic_rank);
 
 				$("#alexa_rank_in_country table tbody").html("<tr><td></td><td></td><td></td><td></td></tr>");
-				$("div.traffic").parent("div.box").parent("div").removeClass("col-4").addClass("col-6");
+				$("div.traffic").parent("div.box").parent("div").removeClass("col-md-4").addClass("col-md-6");
 
 				var _country_code = "",
 					_percent_of_v = "",
@@ -2048,16 +2058,11 @@ $(document).ready(function () {
 				$("#daily_pageviews_per_visitor").html(data.daily_pageviews_per_visitor);
 				$("#dailytime_onsite").html(data.dailytime_onsite);
 
-				$("#dialog").html('<div class="col-4"><div class="box">' +
+				_finalHtml = '<div class="col-md-4"><div class="box">' +
 					$("#div_traffic_history").html() + '</div></div>' +
-					'<div class="col-4"><div class="box">' + $("#div_site_metrics_history").html() + '</div></div>');
-				$(".ui-dialog-title").html($this.text());
-				$("#dialog").attr("title", $this.text()).dialog({
-					height: 440,
-					width: 910,
-					modal: true
-				});
-			} else if ($option === "link") {
+					'<div class="col-md-4"><div class="box">' + $("#div_site_metrics_history").html() + '</div></div>';
+
+			} else if ($option == "link") {
 				data = data[0];
 				var str = JSON.stringify(data);
 				data = JSON.parse(str);
@@ -2089,15 +2094,13 @@ $(document).ready(function () {
 					$("#internal_links_count").html("N/A");
 					$("#internal_nofollow_count").html("0");
 				}
-
-				$("#dialog").html('<div class="box">' + $("#div_links_history").html() + '</div>');
-				$(".ui-dialog-title").html($this.text());
-				$("#dialog").attr("title", $this.text()).dialog({
-					height: 440,
-					width: 910,
-					modal: true
-				});
+				
+				_finalHtml = '<div class="col-md-12"><div class="box">'+
+					$("#div_links_history").html() + '</div></div>';
 			}
+
+			// SHOW THE HISTORY MODAL
+			showHistoryModal($this.text(), _finalHtml);
 
 		}).fail(function (data) {
 			console.log(data);
@@ -2260,12 +2263,8 @@ $(document).ready(function () {
 	});
 
 	function check_url(domain) {
-		if (domain.substr(domain.length - 1, 1) !== '/') {
-			domain = domain + '/';
-		}
-
-		if (domain.substr(0, 7) !== 'http://' && domain.substr(0, 8) !== 'https://') {
-			domain = '//' + domain;
+		if (domain.substr(0, 7) != 'http://' && domain.substr(0, 8) != 'https://') {
+			domain = 'http://' + domain;
 		}
 		return domain;
 	}

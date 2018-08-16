@@ -336,7 +336,7 @@
 </div>
 
 
- <!-- Tools settings Modal -->
+<!-- Tools settings Modal -->
 <div class="modal fade in" id="settings_dialog" style="display: none;">
 	<div class="modal-dialog">
 		<div class="modal-content">

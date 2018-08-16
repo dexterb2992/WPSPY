@@ -135,6 +135,7 @@ function wpspy_admin_scripts() {
     wp_register_style( 'bootstrap', plugins_url( '/assets/bootstrap/css/bootstrap.min.css', __FILE__ ) );
     wp_register_style( 'ionicons', plugins_url( '/assets/Ionicons/css/ionicons.min.css', __FILE__ ) );
     wp_register_style( 'select2css', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css' );
+    wp_register_style( 'bootstrapDataTable', plugins_url( '/css/dataTables.bootstrap.min.css', __FILE__ ) );
     wp_register_style( 'admin-lte', plugins_url( '/assets/dist/css/AdminLTE.min.css', __FILE__ ) );
 
     /* Link our already registered script to a page */
@@ -163,10 +164,11 @@ function wpspy_admin_scripts() {
     wp_enqueue_style( 'jquery.dataTables.min' );
     wp_enqueue_style( 'jquery-ui' );
     wp_enqueue_style( 'jquery-ui-css-cdn' );
-    wp_enqueue_style( 'wpspy-style' );
     wp_enqueue_style( 'bootstrap' );
     wp_enqueue_style( 'ionicons' );
     wp_enqueue_style( 'select2css' );
+    wp_enqueue_style('bootstrapDataTable');
+    wp_enqueue_style( 'wpspy-style' );
     wp_enqueue_style( 'admin-lte' );
 
 

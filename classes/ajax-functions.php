@@ -98,7 +98,7 @@ function get_history_list($domain){
 	global $wpdb;
 	$table_name = $wpdb->prefix.'wpspy_activity_log';
 
-	$sql = "SELECT id, DATE_FORMAT(activity_date,'%W, %M %e, %Y @ %h:%i %p') as formatted_activity_date,
+	$sql = "SELECT id, DATE_FORMAT(activity_date,'%m/%d/%Y @%H:%i') as formatted_activity_date,
 	 		activity_date FROM ".$table_name." WHERE url = '".$domain."' ORDER BY id DESC";
 	$res = $wpdb->get_results( $sql, ARRAY_A );
 	
