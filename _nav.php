@@ -33,6 +33,7 @@
 
 
 	$_GIVEN_URL_DOMAIN = !empty($_GIVEN_URL) ? wpspyGetHost($_GIVEN_URL) : "";
+	$_SOURCE = isset($_GET['source']) ? trim($_GET['source']) : "";
 
 	$routes = array(
 		"site-info" => "Site Info",

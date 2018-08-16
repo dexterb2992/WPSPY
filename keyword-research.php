@@ -17,7 +17,7 @@
 						<form target="remember" method="post" action="about:blank" id="form_wpkm">
 							
 							<div class="form-group form-inline">
-								<input class="form-control wpspy-input" type="text" name="wpkm_keyword" id="wpkm_keyword" placeholder="Enter keyword"/>
+								<input class="form-control wpspy-input" type="text" name="wpkm_keyword" id="wpkm_keyword" placeholder="Enter keyword" value="<?php echo !empty($_SOURCE) ? $_SOURCE : ''; ?>" />
 								<button type="submit" class="btn btn-info" name="wpkm_submit" id="wpkm_submit">Go</button>
 							</div>
 							<div id="wpkm_results_count"></div>
@@ -31,7 +31,7 @@
 						<form target="remember2" method="post" action="about:blank" id="form_wpkm_check_domain">
 
 							<div class="form-group form-inline">
-								<input type="text" class="form-control wpspy-input" name="domain_name" id="domain_name" placeholder="Enter your keyword" required/>
+								<input type="text" class="form-control wpspy-input" name="domain_name" id="domain_name" placeholder="Enter your keyword" required />
 								<select name="tdl" id="tdl_extension" class="form-control">
 									<option value=".com">.com</option>
 									<option value=".org">.org</option>

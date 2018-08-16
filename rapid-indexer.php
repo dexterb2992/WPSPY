@@ -17,7 +17,8 @@
 						<iframe src="about:blank" id="remember" name="remember" class="hidden"></iframe>
 						<form method="post" action="" id="form_wpindexer" target="remember" class="form form-inline">
 							<div class="input-group">
-					            <input	type="text" class="form-control" name="wpindexer_url" id="wpindexer_url" placeholder="www.example.com"/>
+					            <input	type="text" class="form-control" name="wpindexer_url" id="wpindexer_url"
+                                    placeholder="www.example.com" value="<?php echo !empty($_SOURCE) ? $_SOURCE : ''; ?>" />
 					            <span class="input-group-btn">
 					            	<input type="submit" class="wpindexer_btn btn btn-primary" name="wpindexer_submit" id="wpindexer_submit" value="Go" />
 					            </span>

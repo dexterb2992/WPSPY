@@ -57,14 +57,6 @@ $(document).ready(function () {
 		hide_loader();
 	};
 
-	/*$( document ).ajaxStart(function() {
-	  show_loader();
-	});
-	
-	$( document ).ajaxStop(function() {
-		hide_loader();
-	});*/
-
 	setTimeout(function () {}, 10);
 
 	function onLoadingState(classSelector) {
@@ -84,7 +76,6 @@ $(document).ready(function () {
 	}
 
 	function infoBoxOnLoadingState(classSelector) {
-		// $(classSelector+' .info-box-text').prepend('<i class="fa fa-spinner fa-spin></i>');
 		$(classSelector + ' .info-box-text').each(function (i, row) {
 			$(row).prepend("<i class='fa fa-spinner fa-spin'></i> ")
 		});
@@ -132,6 +123,56 @@ $(document).ready(function () {
 		return domain;
 	}
 
+	function replaceUrlParam(url, paramName, paramValue) {
+	    if (paramValue == null) {
+	        paramValue = '';
+	    }
+	    var pattern = new RegExp('\\b('+paramName+'=).*?(&|#|$)');
+	    if (url.search(pattern)>=0) {
+	        return url.replace(pattern,'$1' + paramValue + '$2');
+	    }
+	    url = url.replace(/[?#]$/,'');
+	    return url + (url.indexOf('?')>0 ? '&' : '?') + paramName + '=' + paramValue;
+	}
+
+	function appendDomainOnSpySidebarMenus(url) {
+		var prevHref = "";
+		$('.toplevel_page_wpspy-dashboard .wp-submenu li>a').each(function (i, item) {
+			prevHref = $(item).attr("href");
+			$(item).attr("href", replaceUrlParam(prevHref, "source", url));
+		});
+	}
+
+
+	function sidebarInit() {
+		var source = $("#wpspy_url").val();
+
+		// rapid indexer page
+		if ($("#wpindexer_url").length) {
+			source = $("#wpindexer_url").val();
+
+			$("#form_wpindexer").on("submit", function () {
+				newersource = $("#wpindexer_url").val();
+				if ($.trim(newersource) != "") {
+					appendDomainOnSpySidebarMenus(newersource);
+				}
+			});
+		}
+
+		// keyword master
+		if ($("#wpkm_keyword").length) {
+			source = $("#wpkm_keyword").val();
+		}
+
+		if ($.trim(source) != "") {
+			if (is_valid_url(source)) {
+				appendDomainOnSpySidebarMenus(source);
+			}
+		}
+	}
+
+
+	sidebarInit();
 
 	// # of attempts when getting the social mention data
 	var social_mention_attempts = 0;
@@ -213,6 +254,8 @@ $(document).ready(function () {
 			domain = domain_raw.substring(scheme_index);
 			globalDomain = domain;
 			exportableData.url = domain_raw;
+
+			appendDomainOnSpySidebarMenus(domain_raw);
 
 			$(".wpspy-content").append('<div class="loading"><div class="center">Grabbing data all over the web...</div></div>');
 

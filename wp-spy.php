@@ -22,17 +22,17 @@ function wpspy_admin_menu() {
 
   /* Add our plugin menu and administration screen */
   if($_REQUEST['page']=="wpspy-keycheck") {
-      $pageSpyUrl='wpspy-keycheck';                                    // The slug to use in the URL of the screen
+      $pageSpyUrl='wpspy-keycheck';
   }else{
-      $pageSpyUrl='wpspy-dashboard';        
+      $pageSpyUrl='wpspy-dashboard';                       // The slug to use in the URL of the screen
   }
   /* Add our plugin menu and administration screen */
   $page_hook_suffix = add_menu_page(
       __( 'WP Spy Pro Dashboard', $pageSpyUrl ),          // The menu title
       __( 'WP Spy Pro', $pageSpyUrl ),                    // The screen title
-      'manage_options',                                     // The capability required for access to this menu
-      $pageSpyUrl,                                    // The slug to use in the URL of the screen
-      'wpspy_manage_menu',                                 // The function to call to display the screen
+      'manage_options',                                   // The capability required for access to this menu
+      $pageSpyUrl,                                        // The slug to use in the URL of the screen
+      'wpspy_manage_menu',                                // The function to call to display the screen
       '',
       4
   );
