@@ -55,7 +55,7 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        <!-- <?php //echo $routes[str_replace("wpspy-", "", $page)]; ?> -->
+        <?php echo $routes[str_replace("wpspy-", "", $page)]; ?>
         <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
