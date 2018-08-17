@@ -15,7 +15,8 @@ function store_activity($url, $wpspy_activity) {
     $wpdb->show_errors = true; // true : show errors in development
     $table_name = $wpdb->prefix.'wpspy_activity_log';
     $date_now = date("Y-m-d H:i:s");
-    $sql = "SELECT id, activity_date FROM $table_name WHERE (url='$url') AND (DATE_FORMAT(activity_date,'%Y-%m-%d') = DATE_FORMAT('$date_now', '%Y-%m-%d')) ORDER BY id DESC LIMIT 1";
+    $sql = "SELECT id, activity_date FROM $table_name WHERE (url='$url') AND
+    		(DATE_FORMAT(activity_date,'%Y-%m-%d') = DATE_FORMAT('$date_now', '%Y-%m-%d')) ORDER BY id DESC LIMIT 1";
 	$res = $wpdb->get_results($sql);
 
    	if( $res != 0 && !empty($res) ){
@@ -23,18 +24,27 @@ function store_activity($url, $wpspy_activity) {
    			$wpspy_activity["activity_date"] = $date_now;
 	        $where = array('id' => $res[0]->id);
 	        if( $wpdb->update( $table_name, $wpspy_activity, $where ) ){
-	        	return json_encode(array("status_code"=>"200", "msg" => "Success!"));
+	        	return json_encode( array("status_code"=>"200", "msg" => "Success!") );
 	        }else{
-		    	return json_encode(array("status_code"=>"500", "msg" => "Sorry, something went wrong. Please try again later.", "error" =>  $wpdb->print_error(), "more_info" => $wpdb->last_query));
+		    	return json_encode( array(
+		    		"status_code"=>"500",
+		    		"msg" => "Sorry, something went wrong. Please try again later.",
+		    		"error" =>  $wpdb->print_error(), "more_info" => $wpdb->last_query
+		    	) );
 	        }
    	}else{
    		// Insert new record
 	   		$wpspy_activity["activity_date"] = $date_now;
 
 		    if( $wpdb->insert( $table_name, $wpspy_activity ) ){
-		    	return json_encode(array("status_code"=>"200", "msg" => "Success!"));
+		    	return json_encode( array("status_code"=>"200", "msg" => "Success!") );
 		    }else{
-		    	return json_encode(array("status_code"=>"500", "msg" => "Sorry, something went wrong. Please try again later.", "error" =>  $wpdb->print_error(), "more_info" => $wpdb->last_query));
+		    	return json_encode( array(
+		    		"status_code"=>"500",
+		    		"msg" => "Sorry, something went wrong. Please try again later.",
+		    		"error" =>  $wpdb->print_error(),
+		    		"more_info" => $wpdb->last_query
+		    	) );
 		    }
    	}
 }
@@ -54,7 +64,7 @@ function get_alexa_rank($url){
 		array_push( $alexa_rank, array("value" => (int) str_replace(",", "", $r->alexa_rank)) );
 	}
 
-	return json_encode(array("dates"=>$date, "alexa_ranks"=>$alexa_rank));
+	return json_encode( array("dates"=>$date, "alexa_ranks"=>$alexa_rank) );
 }
 
 function get_chart_data($url, $column){
@@ -74,7 +84,7 @@ function get_chart_data($url, $column){
 		array_push( $values, array("value" => $val) );
 	}
 
-	return json_encode(array("dates"=> json_encode($date), "values"=>json_encode($values)));
+	return json_encode( array("dates"=> json_encode($date), "values"=>json_encode($values)) );
 }
 
 function get_links_on_page($domain){
@@ -89,7 +99,12 @@ function get_ie_links($domain){
 function get_sitemetrics($domain){
 	include "dbhelper.php";
 	$site_metrics = get_site_metrics($domain);
-	$alexa_rank_in_country = json_decode( str_replace("\\", "", $site_metrics["alexa_rank_in_country"]) );
+	
+	/* remove unwanted characters from alexa_rank_in_country */
+	$alexa_rank_in_country = str_replace('&Atilde;&#130;&Acirc;&nbsp;', "", str_replace("\\", "", $site_metrics["alexa_rank_in_country"]));
+
+	$alexa_rank_in_country = json_decode( $alexa_rank_in_country );
+
 	$site_metrics["alexa_rank_in_country"] = $alexa_rank_in_country;
 	echo json_encode($site_metrics);
 }
@@ -178,7 +193,7 @@ function saveRTLSettings($val){
 	if( !empty($res) ){
 		$sql = $wpdb->update( $table_name, array('recommended_tools_limit' => $val), array("id" => $res->id) );
 	}else{
-		$wpdb->insert($table_name, array('recommended_tools_limit' => $val));
+		$wpdb->insert($table_name, array('recommended_tools_limit' => $val) );
 	}
 	return $wpdb->last_query;
 }
@@ -399,7 +414,7 @@ function ajaxCheckDataStatus($option, $url){
 		$foundkeywords = array();
 
 		foreach($alpha as $a) {
-			$data = file_get_contents("https://suggestqueries.google.com/complete/search?output=toolbar&hl=en&q=".urlencode($keyword).urlencode($a));
+			$data = file_get_contents("https://suggestqueries.google.com/complete/search?output=toolbar&hl=en&q=".urlencode($keyword).urlencode($a) );
 			
 			$xml = simplexml_load_string( fix_latin1_mangled_with_utf8($data) );
 			

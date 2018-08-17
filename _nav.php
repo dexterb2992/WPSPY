@@ -49,16 +49,22 @@
 		"support" => "Support",
 		"previous-searches" => "History"
 	);
+	$plugin_data = get_option("plugin_info");
 ?>
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        <?php echo $routes[str_replace("wpspy-", "", $page)]; ?>
+        <!-- <?php //echo $routes[str_replace("wpspy-", "", $page)]; ?> -->
         <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="?page=wpspy-dashboard"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li>
+        	<a href="?page=wpspy-dashboard">
+        		<i class="fa fa-dashboard"></i>
+        		<?php echo $plugin_data['name'].' v'.$plugin_data['version']; ?>
+        	</a>
+        </li>
         <li class="active">
         	<?php echo $routes[str_replace("wpspy-", "", $page)]; ?>
         </li>

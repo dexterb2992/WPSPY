@@ -33,7 +33,7 @@
                         <div class="box-body no-padding">
                         </div>
                         <div class="box-footer text-black">
-                            <div class="div_history_table_outer">
+                            <div class="div_history_table_outer table-responsive">
 								<table class="table table-bordered table-striped" id="history">
 									<thead>
 										<tr>

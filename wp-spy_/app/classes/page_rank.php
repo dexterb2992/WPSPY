@@ -3,7 +3,8 @@ class PR
 {
     public function get_google_pagerank($url)
     {
-        $query = "http://toolbarqueries.google.com/tbr?client=navclient-auto&ch=".$this->CheckHash($this->HashURL($url))."&features=Rank&q=info:".$url."&num=100&filter=0x1505";
+        $query = "http://toolbarqueries.google.com/tbr?client=navclient-auto&ch="
+                .$this->CheckHash($this->HashURL($url))."&features=Rank&q=info:".$url."&num=100&filter=0x1505";
         $data  = @file_get_contents($query);
         $pos   = strpos($data, "Rank_");
         if ($pos === false) {

@@ -1180,9 +1180,9 @@ select#choose_traffic_graph {
     color: #d9534f;
   }
 
-  .dataTables_wrapper {
+  /*.dataTables_wrapper {
     margin-bottom: 16px;
-  }
+  }*/
 
   #wpkm_results_count {
     color: #5cb85c;
@@ -1221,9 +1221,9 @@ select#choose_traffic_graph {
     background-color: rgb(217, 237, 247);
   }
 
-  table.dataTable tbody tr td {
+ /* table.dataTable tbody tr td {
     border-bottom: 1px solid #D9EDF7;
-  }
+  }*/
 
   #tdl_extension {
     min-width: 78px;
@@ -1333,4 +1333,40 @@ div#history_dialog .box>.content {
 .box>.content>.entry {
     width: 100%;
     padding-left: 6px;
+}
+
+.content-header>.breadcrumb {
+    margin-left: 0;
+}
+
+table.rank-in-country {
+    margin-top: 12px;
+}
+
+table.rank-in-country >tbody>tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+}
+
+table.rank-in-country tbody tr>td:nth-child(1),
+table.rank-in-country tbody tr>td:nth-last-child(1),{
+    border: none;
+}
+
+table.rank-in-country tbody td {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+div#traffic-graph-area img {
+    width: 100%;
+    padding: 6px;
+    height: auto;
+}
+
+.entry .right {
+    font-weight: bold;
+}
+
+.site-ping .time-unit {
+  font-weight: lighter;
 }

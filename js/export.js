@@ -51,7 +51,7 @@ $(document).on("click", ".btn-export", function (e){
 				exportableData.wordpress_data = JSON.parse(exportableData.wordpress_data);
 			}
 
-			filename = "WP-Spy SITE INFO";
+			filename = "WP Spy SITE INFO";
 			tbody = "<tr><td><h3>"+filename+" for "+domain+"</h3></tr>"+separator;
 			
 			var geolocation = "<tr><td>GEOLOCATION</td><td colspan='2'></td></tr>"+separator+
@@ -141,7 +141,7 @@ $(document).on("click", ".btn-export", function (e){
 	}else if( page === "page-info" ){
 		tbody = "";
 		separator = "<tr><td colspan='2'></td></tr>";
-		filename = "WP-Spy PAGE-INFO";
+		filename = "WP Spy PAGE-INFO";
 		tbody = "<tr><td colspan='2'><h3>"+filename+" for "+domain+"</h3></tr>"+separator;
 
 		$.each(exportableData, function (i, row){
@@ -153,7 +153,7 @@ $(document).on("click", ".btn-export", function (e){
 	}else if( page === "seo-stats" ){
 		tbody = "";
 		separator = "<tr><td colspan='2'></td></tr>";
-		filename = "WP-Spy SEO STATISTICS";
+		filename = "WP Spy SEO STATISTICS";
 		tbody = "<tr><td colspan='2'><h3>"+filename+" for "+domain+"</h3></td></tr>"+separator;
 
 
@@ -227,7 +227,7 @@ $(document).on("click", ".btn-export", function (e){
 		tbody += pagesIndexed+separator+backlinks+separator+cached;
 
 	}else if( page === "social-stats" ){
-		filename = "WP-Spy SOCIAL STATISTICS";
+		filename = "WP Spy SOCIAL STATISTICS";
 		tbody = "<tr><td colspan='2'>"+filename+" for "+domain+"</td></tr>";
 		var sns = separator+"<tr><td>SOCIAL (SNS)</td><td></td></tr>";
 		$.each(exportableData, function (i, row){
@@ -239,7 +239,7 @@ $(document).on("click", ".btn-export", function (e){
 		tbody += sns;
 
 	}else if( page === "traffic" ){
-		filename = "WP-Spy TRAFFIC INFO";
+		filename = "WP Spy TRAFFIC INFO";
 		tbody = "<tr><td><h3>"+filename+" for "+domain+"</h3></td></tr>";
 		separator = "<tr><td></td></tr>";
 		var sitemetrics = separator+separator+"<tr><td><br/>SITE METRICS<br/><hr/></td></tr>",
@@ -276,7 +276,7 @@ $(document).on("click", ".btn-export", function (e){
 		tbody += traffic+alexaRankInCountry+sitemetrics;
 	
 	}else if( page === "links" ){
-		filename = "WP-Spy LINKS";
+		filename = "WP Spy LINKS";
 		separator = "<tr><td></td></tr>";
 		tbody = "<tr><td><h3>"+filename+" for "+domain+"</h3></td></tr>"+separator+
 				"<tr><td>External Links: "+exportableData.external_links.links.length+" ("+exportableData.external_links.nofollow+" nofollow)</td></tr>"+
@@ -308,16 +308,13 @@ $(document).on("click", ".btn-export", function (e){
 	}
 
 
-	// if( page !== "site-info" ){
-		table.find("tbody").append(tbody);
-	// }
+	table.find("tbody").append(tbody);
 
 	if( $this.attr("data-type") == "csv" ){
 		var args = [$('#exportable_table'), "WP Spy ("+filename+") - "+domain+".csv"];
 		exportTableToCSV.apply($this, args);
 	}else{
 		ExportAsPDF3( "WP Spy ("+filename+") - "+domain+".pdf", table );
-		// $('#exportable_table').tableExport({type:'pdf',escape:'false'});
 	}
 
 });
@@ -330,19 +327,11 @@ $(document).on("click", ".export-backlinks", function (e){
 
 	console.log('exporting backlinks...');
 
-	// if( $("table.linktext tbody").length < 1 ){
 	if( $("table#exportable_backlinks").length < 1 ){
 		return false;
 	}
 
 	table.children("tbody").html("");
-
-	// var filename_ad = "", newP = $("#backlinks_pagination p").clone();
-
-
-
-	// newP.children("span").remove();
-	// filename_ad = newP.text().replace("Showing", "");
 
 	var filename_ad = 0;
 

@@ -188,6 +188,20 @@ $(document).ready(function () {
 		$("#history_dialog").modal("show");
 	}
 
+	function getSitePing() {
+		url = $("#wpspy_url").val();
+		if (url != "") {
+			var p = new Ping();
+			
+			infoBoxOnLoadingState(".site-ping");
+			
+			p.ping(url, function(err, data) {
+				$("#site_ping").html(data+'<small class="time-unit" title="milliseconds">ms</small>');
+				removeInfoBoxLoadingState(".site-ping");
+			});
+		}
+	}
+
 
 	sidebarInit();
 
@@ -1143,7 +1157,7 @@ $(document).ready(function () {
 				});
 			} else if (page == "seo-stats") {
 				e.preventDefault();
-				disable_button(btn, 'Please wait...');
+				
 
 				$.ajax({
 					url: ajaxurl,
@@ -1154,240 +1168,243 @@ $(document).ready(function () {
 						url: domain_raw,
 						option: 'seo_stats'
 					},
-					dataType: 'json'
-				}).done(function (data) {
-					enable_button(btn, "Go");
-					console.log(typeof (data));
-
-
-					if (data !== false && data[0].alexa_rank === 0) {
-						data = false;
-					}
-
-					$("#archived").attr('href', '//web.archive.org/web/*/' + domain_raw).addClass('spy-icon').addClass('spy-icon-eye');
-					$("#google_cached").attr('href', '//webcache.googleusercontent.com/search?cd=1&hl=en&ct=clnk&gl=us&q=cache:' + domain_raw)
-						.addClass('spy-icon').addClass('spy-icon-eye');
-
-					// if (data === false) {
-					if (typeof (data) != 'object') { // No previous results for this domain
-						progress_limit = 4;
-						progress_current = 0;
-						hide_loader();
-
-						data_array = {};
-
-						data_array.q = "save_activity";
-						data_array.url = domain_raw;
-						data_array.action = 'wpspy_ajax';
-
-						/* let's get the all the data for the Ranks Box */
-						$.ajax({
-							url: ajaxurl,
-							type: 'post',
-							data: {
-								action: 'wpspy_ajax',
-								q: 'get_ranks',
-								url: domain_raw
-							},
-							dataType: 'json',
-							beforeSend: function () {
-								onLoadingState(".rank");
-							},
-							success: function (data) {
-								console.log(data);
-								$.each(data, function (i, row) {
-									$("#" + i).html(row);
-									if (i === "quantcast_traffic") {
-										i = i + "_rank";
-									}
-									data_array[i] = row;
-								});
-							},
-							error: function (data) {
-								console.log(data);
-								progress_current++;
-							},
-							complete: function () {
-								removeLoadingState(".rank")
-							}
-						});
-
-						/* let's get all the backlinks data */
-						$.ajax({
-							url: ajaxurl,
-							type: 'post',
-							data: {
-								action: 'wpspy_ajax',
-								q: 'get_backlinks',
-								url: domain_raw
-							},
-							dataType: 'json',
-							beforeSend: function () {
-								onLoadingState(".backlinks");
-							},
-							success: function (data) {
-								$.each(data, function (i, row) {
-									extract_json_to_div(row, $("div.backlinks ." + i + " .right"), i);
-									data_array["backlinks_" + i] = row;
-								});
-								$('.backlinks .box-title .success').fadeOut(function () {
-									$(this).remove();
-								});
-								$('.backlinks button[data-widget="collapse"]').trigger('click');
-								progress_current++;
-								check_progress_and_save(progress_limit, progress_current, data_array);
-							},
-							error: function (data) {
-								console.log(data);
-								progress_current++;
-								check_progress_and_save(progress_limit, progress_current, data_array);
-							},
-							complete: function () {
-								removeLoadingState(".backlinks")
-							}
-						});
-
-						/* let's get all the pages indexed data */
-						$.ajax({
-							url: ajaxurl,
-							type: 'post',
-							data: {
-								action: 'wpspy_ajax',
-								q: 'get_pages_indexed',
-								url: domain_raw
-							},
-							dataType: 'json',
-							beforeSend: function () {
-								onLoadingState(".pages-indexed");
-							},
-							success: function (data) {
-								$.each(data, function (i, row) {
-									extract_json_to_div(row, $("div.pages-indexed ." + i + " .right"), i);
-									data_array["page_indexed_" + i] = row;
-								});
-								$('.pages-indexed .box-title .success').fadeOut(function () {
-									$(this).remove();
-								});
-								$('.pages-indexed button[data-widget="collapse"]').trigger('click');
-								progress_current++;
-								check_progress_and_save(progress_limit, progress_current, data_array);
-							},
-							error: function (data) {
-								console.log(data);
-								$('.pages-indexed .box-title span').fadeOut(function () {
-									$(this).remove();
-								});
-								$('.pages-indexed button[data-widget="collapse"]').trigger('click');
-								progress_current++;
-								check_progress_and_save(progress_limit, progress_current, data_array);
-							},
-							complete: function () {
-								removeLoadingState(".pages-indexed")
-							}
-						});
-
-						/* let's get the alexa rank in country */
-						$.ajax({
-							url: ajaxurl,
-							type: 'post',
-							data: {
-								action: 'wpspy_ajax',
-								q: 'get_alexa_rank_in_country',
-								url: domain_raw
-							},
-							dataType: 'json'
-						}).done(function (data) {
-							console.log(data);
-
-							$.each(data, function (i, row) {
-								if (i === "alexa_rank_in_country") {
-									row = JSON.stringify(row);
-								}
-								data_array[i] = row;
-							});
-
-							progress_current++;
-							check_progress_and_save(progress_limit, progress_current, data_array);
-						}).fail(function () {
-							data_array.alexa_rank_in_country = "";
-							progress_current++;
-							check_progress_and_save(progress_limit, progress_current, data_array);
-						});
-
-						/* let's set the exportable data */
-						exportableData = data_array;
-					} else {
-						progress_limit = 1;
-						console.log(data);
-						data = data[0];
-						exportableData = data;
+					dataType: 'json',
+					beforeSend: function () {
+						disable_button(btn, 'Please wait...');
+					},
+					complete: function () {
 						enable_button(btn, "Go");
+					},
+					success: function (data) {
+						console.log(typeof (data));
 
-						$("#alexa_rank").html(data.alexa_rank);
-						$("#quantcast_traffic").html(data.quantcast_traffic);
-						// $("#google_page_rank").html(data.google_page_rank);
-						$.each(data, function (i, row) {
-							// pages indexed
-							var index = i.indexOf('page_indexed_', 0);
-							if (index > -1) {
-								extract_json_to_div(row, $("div.pages-indexed ." + i.replace("page_indexed_", "") + " .right"), i);
-							}
 
-							index = i.indexOf('backlinks_', 0);
-							if (index > -1) {
-								extract_json_to_div(row, $("div.backlinks ." + i.replace("backlinks_", "") + " .right"), i);
-							}
+						if (data !== false && data[0].alexa_rank === 0) {
+							data = false;
+						}
 
-						});
+						$("#archived").attr('href', '//web.archive.org/web/*/' + domain_raw).addClass('spy-icon').addClass('spy-icon-eye');
+						$("#google_cached").attr('href', '//webcache.googleusercontent.com/search?cd=1&hl=en&ct=clnk&gl=us&q=cache:' + domain_raw)
+							.addClass('spy-icon').addClass('spy-icon-eye');
 
-						progress_current++;
-						check_progress(progress_limit, progress_current);
+						// if (data === false) {
+						if (typeof (data) != 'object') { // No previous results for this domain
+							progress_limit = 4;
+							progress_current = 0;
+							hide_loader();
 
-						if (data.alexa_rank_in_country === null) {
-							/* let's get the alexa rank in country */
-							data_array = {
-								action: 'wpspy_ajax',
-								q: 'save_activity',
-								url: domain_raw
-							};
+							data_array = {};
+
+							data_array.q = "save_activity";
+							data_array.url = domain_raw;
+							data_array.action = 'wpspy_ajax';
+
+							/* let's get the all the data for the Ranks Box */
 							$.ajax({
 								url: ajaxurl,
 								type: 'post',
 								data: {
 									action: 'wpspy_ajax',
+									q: 'get_ranks',
+									url: domain_raw
+								},
+								dataType: 'json',
+								beforeSend: function () {
+									onLoadingState(".rank");
+								},
+								success: function (data) {
+									console.log(data);
+									$.each(data, function (i, row) {
+										$("#" + i).html(row);
+										if (i === "quantcast_traffic") {
+											i = i + "_rank";
+										}
+										data_array[i] = row;
+									});
+								},
+								error: function (data) {
+									console.log(data);
+									progress_current++;
+								},
+								complete: function () {
+									removeLoadingState(".rank")
+									progress_current++;
+									check_progress_and_save(progress_limit, progress_current, data_array);
+								}
+							});
+
+							/* let's get all the backlinks data */
+							$.ajax({
+								url: ajaxurl,
+								type: 'post',
+								data: {
+									action: 'wpspy_ajax',
+									q: 'get_backlinks',
+									url: domain_raw
+								},
+								dataType: 'json',
+								beforeSend: function () {
+									onLoadingState(".backlinks");
+								},
+								success: function (data) {
+									$.each(data, function (i, row) {
+										extract_json_to_div(row, $("div.backlinks ." + i + " .right"), i);
+										data_array["backlinks_" + i] = row;
+									});
+								},
+								error: function (data) {
+									console.warn(data);
+								},
+								complete: function () {
+									removeLoadingState(".backlinks")
+									progress_current++;
+									check_progress_and_save(progress_limit, progress_current, data_array);
+								}
+							});
+
+							/* let's get all the pages indexed data */
+							$.ajax({
+								url: ajaxurl,
+								type: 'post',
+								data: {
+									action: 'wpspy_ajax',
+									q: 'get_pages_indexed',
+									url: domain_raw
+								},
+								dataType: 'json',
+								beforeSend: function () {
+									onLoadingState(".pages-indexed");
+								},
+								success: function (data) {
+									$.each(data, function (i, row) {
+										extract_json_to_div(row, $("div.pages-indexed ." + i + " .right"), i);
+										data_array["page_indexed_" + i] = row;
+									});
+								},
+								error: function (data) {
+									console.warn(data);
+								},
+								complete: function () {
+									removeLoadingState(".pages-indexed")
+									/* let's set the exportable data */
+									exportableData = data_array;
+
+									progress_current++;
+									check_progress_and_save(progress_limit, progress_current, data_array);
+								}
+							});
+
+							/* let's get the alexa rank in country */
+							$.ajax({
+								url: ajaxurl,
+								type: 'post',
+								dataType: 'json',
+								data: {
+									action: 'wpspy_ajax',
 									q: 'get_alexa_rank_in_country',
 									url: domain_raw
 								},
-								dataType: 'json'
-							}).done(function (data) {
-								console.log(data);
+								beforeSend: function () {
+									console.log('fetching alexa_rank_in_country.')
+								},
+								success: function (data) {
+									console.log(data);
 
-								$.each(data, function (i, row) {
-									if (i === "alexa_rank_in_country") {
-										row = JSON.stringify(row);
-									}
-									data_array[i] = row;
-								});
+									$.each(data, function (i, row) {
+										if (i === "alexa_rank_in_country") {
+											row = JSON.stringify(row);
+										}
+										data_array[i] = row;
+									});
+								},
+								error: function () {
+									data_array.alexa_rank_in_country = "";
+								},
+								complete: function () {
+									progress_current++;
+									check_progress_and_save(progress_limit, progress_current, data_array);
+									/* let's set the exportable data */
+									exportableData = data_array;
+								}
+							});
 
-								data_array.action = 'wpspy_ajax';
+							
+						} else {
+							progress_limit = 1;
+							console.log(data);
+							data = data[0];
+							exportableData = data;
+							enable_button(btn, "Go");
 
+							$("#alexa_rank").html(data.alexa_rank);
+							$.each(data, function (i, row) {
+								// pages indexed
+								var index = i.indexOf('page_indexed_', 0);
+								if (index > -1) {
+									extract_json_to_div(row, $("div.pages-indexed ." + i.replace("page_indexed_", "") + " .right"), i);
+								}
+
+								index = i.indexOf('backlinks_', 0);
+								if (index > -1) {
+									extract_json_to_div(row, $("div.backlinks ." + i.replace("backlinks_", "") + " .right"), i);
+								}
+
+							});
+
+							progress_current++;
+							check_progress(progress_limit, progress_current);
+
+							if (data.alexa_rank_in_country === null) {
+								/* let's get the alexa rank in country */
+								data_array = {
+									action: 'wpspy_ajax',
+									q: 'save_activity',
+									url: domain_raw
+								};
 								$.ajax({
 									url: ajaxurl,
-									type: post,
-									data: data_array,
-									dataType: json
+									type: 'post',
+									data: {
+										action: 'wpspy_ajax',
+										q: 'get_alexa_rank_in_country',
+										url: domain_raw
+									},
+									dataType: 'json'
 								}).done(function (data) {
 									console.log(data);
+
+									$.each(data, function (i, row) {
+										if (i === "alexa_rank_in_country") {
+											row = JSON.stringify(row);
+										}
+										data_array[i] = row;
+									});
+
+									data_array.action = 'wpspy_ajax';
+
+									$.ajax({
+										url: ajaxurl,
+										type: post,
+										data: data_array,
+										dataType: json
+									}).done(function (data) {
+										console.log(data);
+									}).fail(function (data) {
+										console.log(data);
+										console.log("<>alexa_rank_in_country!!!");
+									});
+
 								}).fail(function (data) {
 									console.log(data);
-									console.log("<>alexa_rank_in_country!!!");
 								});
+							}
 
-							}).fail(function (data) {
-								console.log(data);
-							});
 						}
-
+					},
+					error: function (data) {
+						console.warn(data);
+						alert("Something went wrong while trying to fetch SEO Stats for "+domain_raw+
+							"Please try again later.");
 					}
 				});
 
@@ -1512,67 +1529,79 @@ $(document).ready(function () {
 					},
 					beforeSend: function () {
 						disable_button(btn, "Please wait...");
-					}
-				}).success(function (data) {
-					console.log(data);
+						onLoadingState(".site-metrics");
+						onLoadingState(".traffic");
+						onLoadingState(".traffic-graphs");
+					},
+					complete: function () {
+						enable_button(btn, "Go");
+						removeLoadingState(".site-metrics");
+						removeLoadingState(".traffic");
+						removeLoadingState(".traffic-graphs");
 
-					enable_button(btn, "Go");
-					var c_graph = $("#choose_traffic_graph option:selected").val();
+						progress_current++;
+						check_progress(progress_limit, progress_current);
+					},
+					success: function (data) {
+						console.log(data);
 
-					update_traffic_graph(c_graph, domain_raw);
+						enable_button(btn, "Go");
+						var c_graph = $("#choose_traffic_graph option:selected").val();
 
-					exportableData = data;
+						update_traffic_graph(c_graph, domain_raw);
 
-					$.each(data, function (i, row) {
-						if (i !== "alexa_rank_in_country") {
-							$("div.entry .right #" + i).html(row);
-						} else {
-							$(".rank-in-country tbody").html("");
+						exportableData = data;
 
-							if (typeof (row) === null || row === null || row === undefined || row.length === 0) {
-								$(".rank-in-country tbody").append('<tr>' +
-									'<td colspan="4">' +
-									'<span class="failed">No data available for now. Check out the <a href="?page=wpspy-seo-stats" target="_blank">SEO Stats</a>  for ' + domain_raw + ' and try again.</span>' +
-									'</td>' +
-									'</tr>');
+						$.each(data, function (i, row) {
+							if (i !== "alexa_rank_in_country") {
+								$("div.entry .right #" + i).html(row);
 							} else {
-								$.each(row, function (i2, row2) {
-									if (is_numeric(i2)) {
-										$(".rank-in-country tbody").append('<tr>' +
-											'<td>' +
-											'<span class="flag flag-' + row2.country_code + '"></span>' +
-											'</td>' +
-											'<td>' +
-											'<span>' + row2.country + '</span>' +
-											'</td>' +
-											'<td>' + row2.percent_of_visitors + '</td>' +
-											'<td>' + row2.rank + '</td>' +
-											'</tr>');
-									} else {
-										$(".rank-in-country tbody").append('<tr>' +
-											'<td>' +
-											'<span class="flag flag-"></span>' +
-											'</td>' +
-											'<td>' +
-											'<span>-</span>' +
-											'</td>' +
-											'<td>-</td>' +
-											'<td>-</td>' +
-											'</tr>');
-									}
-								});
+								$(".rank-in-country tbody").html("");
+
+								if (typeof (row) === null || row === null || row === undefined || row.length === 0) {
+									$(".rank-in-country tbody").append('<tr>' +
+										'<td colspan="4">' +
+										'<span class="failed">No data available for now. Check out the '+
+										'<a href="?page=wpspy-seo-stats&source='+domain_raw+'" target="_blank">SEO Stats</a>  for ' +
+										domain_raw + ' and try again.</span>' +
+										'</td>' +
+										'</tr>');
+								} else {
+									$.each(row, function (i2, row2) {
+										if (is_numeric(i2)) {
+											$(".rank-in-country tbody").append('<tr>' +
+												'<td>' +
+												'<span class="flag flag-' + row2.country_code + '"></span>' +
+												'</td>' +
+												'<td>' +
+												'<span>' + row2.country + '</span>' +
+												'</td>' +
+												'<td>' + row2.percent_of_visitors + '</td>' +
+												'<td>' + row2.rank + '</td>' +
+												'</tr>');
+										} else {
+											$(".rank-in-country tbody").append('<tr>' +
+												'<td>' +
+												'<span class="flag flag-"></span>' +
+												'</td>' +
+												'<td>' +
+												'<span>-</span>' +
+												'</td>' +
+												'<td>-</td>' +
+												'<td>-</td>' +
+												'</tr>');
+										}
+									});
+								}
 							}
-						}
-					});
-
-					progress_current++;
-					check_progress(progress_limit, progress_current);
-				}).fail(function (data) {
-					enable_button(btn, "Go");
-
-					progress_current++;
-					check_progress(progress_limit, progress_current);
+						});
+					},
+					error: function (data) {
+						console.warn(data);
+					}
 				});
+
+				getSitePing();
 			} else if (page == "previous-searches") {
 				var content = "";
 				progress_limit = 1;
@@ -1917,15 +1946,15 @@ $(document).ready(function () {
 											'<span id="alexa_rank">' + data[0].alexa_rank + '</span>' +
 										'</div>' +
 									'</div>' +
-									'<div class="entry">' +
-										'<div class="left">' +
-											'<span class="spy-icon-quantcast spy-icon"></span>' +
-											'Quantcast Traffic Rank' +
-										'</div>' +
-										'<div class="right">' +
-											'<span id="quantcast_traffic">' + data[0].quantcast_traffic_rank + '</span>' +
-										'</div>' +
-									'</div>' +
+									// '<div class="entry">' +
+									// 	'<div class="left">' +
+									// 		'<span class="spy-icon-quantcast spy-icon"></span>' +
+									// 		'Quantcast Traffic Rank' +
+									// 	'</div>' +
+									// 	'<div class="right">' +
+									// 		'<span id="quantcast_traffic">' + data[0].quantcast_traffic_rank + '</span>' +
+									// 	'</div>' +
+									// '</div>' +
 								'</div>' +
 							'</div>';
 				var pages_indexed_arr = [
@@ -2000,7 +2029,7 @@ $(document).ready(function () {
 
 				backlinks = '<div class="box backlinks"><div class="title">Backlinks</div><div class="content">' + backlinks + '</div></div>';
 
-				_finalHtml = '<div class="col-md-4">' + rank + backlinks + '</div><div class="col-md-4">' + fi_pages_indexed + '</div>';
+				_finalHtml = '<div class="col-md-6">' + rank + backlinks + '</div><div class="col-md-4">' + fi_pages_indexed + '</div>';
 
 			} else if ($option == "social_stats") {
 				data = data[0];
@@ -2058,7 +2087,7 @@ $(document).ready(function () {
 				$("#daily_pageviews_per_visitor").html(data.daily_pageviews_per_visitor);
 				$("#dailytime_onsite").html(data.dailytime_onsite);
 
-				_finalHtml = '<div class="col-md-4"><div class="box">' +
+				_finalHtml = '<div class="col-md-6"><div class="box">' +
 					$("#div_traffic_history").html() + '</div></div>' +
 					'<div class="col-md-4"><div class="box">' + $("#div_site_metrics_history").html() + '</div></div>';
 

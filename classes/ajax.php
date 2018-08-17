@@ -24,6 +24,9 @@ if ($q == "save_activity") {
 	$wpspy_activity = array();
 	foreach ($_POST as $key => $value) {
 		if ($key != "q" && $key != "action") {
+			/* remove unwanted characters from alexa_rank_in_country */
+			$value = str_replace('&Atilde;&#130;&Acirc;&nbsp;', "", $value);
+
 			$wpspy_activity[(string) $key] = (string) $value;
 		}
 	}

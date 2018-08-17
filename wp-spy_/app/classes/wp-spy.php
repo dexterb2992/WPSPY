@@ -32,7 +32,6 @@ class WpSpy{
 		self::checkUrl($url);
 
 		self::$url = $url;
-		// self::$data = @file_get_contents(self::$url);
 		self::$data = getPageData(self::$url);
 
 		libxml_use_internal_errors(true);
@@ -87,38 +86,37 @@ class WpSpy{
 		    $index++;
 	    	self::calculateProgress();
 	    
+	    	$value = (string) $tag->getAttribute( $attr ); //check for script src
+	       	
+       		preg_match("~wp-content/(.*?)plugins/(.*?)/~", $value, $output);
+	
+			if(count($output)>0){
+				array_push(self::$plugins, isset($output[2]) ? $output[2] : $output[1] );
+			}
 
-		    	$value = (string) $tag->getAttribute( $attr ); //check for script src
-		       	
-	       		preg_match("~wp-content/(.*?)plugins/(.*?)/~", $value, $output);
-		
-				if(count($output)>0){
-					array_push(self::$plugins, isset($output[2]) ? $output[2] : $output[1] );
+			if( !isset(self::$theme) ){
+
+				preg_match("~wp-content/themes/(.*?)/~", $value, $output2);
+				if(count($output2)>0){
+					self::$theme = $output2[1];
 				}
+			}
 
-				if( !isset(self::$theme) ){
+			$value2 = (string) $tag->getAttribute( 'href' ); //check for link hrefs
 
-					preg_match("~wp-content/themes/(.*?)/~", $value, $output2);
-					if(count($output2)>0){
-						self::$theme = $output2[1];
-					}
+			preg_match("~wp-content/(.*)plugins/(.*?)/~", $value2, $output);
+	
+			if(count($output)>0){
+
+				array_push(self::$plugins, isset($output[2]) ? $output[2] : $output[1] );
+			}
+
+			if( !isset(self::$theme) ){
+				preg_match("~wp-content/themes/(.*?)/~", $value2, $output2);
+				if(count($output2)>0){
+					self::$theme = $output2[1];
 				}
-
-				$value2 = (string) $tag->getAttribute( 'href' ); //check for link hrefs
-
-				preg_match("~wp-content/(.*)plugins/(.*?)/~", $value2, $output);
-		
-				if(count($output)>0){
-
-					array_push(self::$plugins, isset($output[2]) ? $output[2] : $output[1] );
-				}
-
-				if( !isset(self::$theme) ){
-					preg_match("~wp-content/themes/(.*?)/~", $value2, $output2);
-					if(count($output2)>0){
-						self::$theme = $output2[1];
-					}
-				}
+			}
 		}	
 	}
 
@@ -292,7 +290,6 @@ class WpSpy{
 
 			libxml_use_internal_errors(true);
 
-			// $html = @file_get_contents('https://wordpress.org/themes/'.$plugin_theme);
 			$html = getPageData('https://wordpress.org/themes/'.$plugin_theme);
 
 			$dom = new DOMDocument;
@@ -322,7 +319,6 @@ class WpSpy{
 	static function downloadThemePlugin($plugin_theme, $type){
 		libxml_use_internal_errors(true);
 		$url = "https://wordpress.org/".$type."/".$plugin_theme;
-		// $html = @file_get_contents($url);
 		$html = getPageData($url);
 
 		$dom = str_get_html($html);
@@ -336,26 +332,6 @@ class WpSpy{
 		$anchor = $dom->find(".$class", 0);
 
 		return isset($anchor->href) ? $anchor->href : "N/A";
-
-		/*@$dom = new DOMDocument;
-		@$dom->loadHTML($html);
-		$index = 0;
-		
-		foreach ($dom->getElementsByTagName('a') as $node) {
-
-		    $index++;
-		    if($type == "plugins"){
-		    	if( $node->getAttribute( 'itemprop' ) == "downloadUrl" ){
-			    	return $node->getAttribute( 'href' );
-			    }
-		    }else{ // the download link we are looking is for the theme
-		    	if( substr($node->getAttribute( 'href' ), 0, 31)  == "//downloads.wordpress.org/theme" ){
-		    		return $node->getAttribute( 'href' );
-		    	}
-
-		    		
-		    }
-		}*/
 		
 	}
 

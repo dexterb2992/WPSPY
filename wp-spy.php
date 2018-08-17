@@ -1,22 +1,25 @@
 <?php
 /**
  * @package WP_SPY
- * @version 1.3.3
+ * @version 2.0
  */
 /*
 Plugin Name: WP Spy (Pro)
 Description: Discover the plugins and theme used by any wordpress blog. Instantly download any free plugin and theme...with one click. Discover the Whois details about the site (great for offliners, service providers). Discover site vulnerabilities, see all the social shares, get the domains backlinks Archive all your searches for future analysis, View history of site, backlinks, shares etc.
-Version: 1.3.3
+Version: 2.0
 Author: TopDogIMSolutions
 Author URI: http://onlinesuccesswithchris.com
 */
 
 
 //Version of currently activated plugin
-$current_version = '1.3.3';
+$current_version = '2.0';
 
 add_action( 'admin_menu', 'wpspy_admin_menu' );
 add_action( 'wp_en queue_scripts', 'wpspy_plugin_styles' );
+
+
+add_option("plugin_info", array("name" => "WP Spy (Pro)", "version" => $current_version));
 
 function wpspy_admin_menu() {
 
@@ -124,6 +127,7 @@ function wpspy_admin_scripts() {
     wp_register_script( 'script', plugins_url( '/js/script.js', __FILE__ ) );
     wp_register_script( 'bootstrapjs', plugins_url( '/assets/bootstrap/js/bootstrap.min.js', __FILE__ ) );
     wp_register_script( 'select2js', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js' );
+    wp_register_script( 'pingjs', plugins_url( '/assets/ping/ping.min.js', __FILE__ ) );
     wp_register_script( 'admin_lte', plugins_url( '/assets/dist/js/app.min.js', __FILE__ ) );
 
     /* Register style sheet. */
@@ -156,23 +160,21 @@ function wpspy_admin_scripts() {
     wp_enqueue_script( 'export' );
     wp_enqueue_script( 'bootstrapjs' );
     wp_enqueue_script( 'select2js' );
+    wp_enqueue_script( 'pingjs' );
     wp_enqueue_script( 'admin_lte' );
 
 
     /* Link our already registered style to a page */
-    wp_enqueue_style('fontawesome');
+    wp_enqueue_style( 'fontawesome' );
     wp_enqueue_style( 'jquery.dataTables.min' );
     wp_enqueue_style( 'jquery-ui' );
     wp_enqueue_style( 'jquery-ui-css-cdn' );
     wp_enqueue_style( 'bootstrap' );
     wp_enqueue_style( 'ionicons' );
     wp_enqueue_style( 'select2css' );
-    wp_enqueue_style('bootstrapDataTable');
-    wp_enqueue_style( 'wpspy-style' );
+    wp_enqueue_style( 'bootstrapDataTable' );
     wp_enqueue_style( 'admin-lte' );
-
-
-
+    wp_enqueue_style( 'wpspy-style' );
 }
 
 add_action('admin_init', 'wpspy_admin_scripts');
@@ -185,7 +187,6 @@ function wpspy_manage_menu() {
   }else{
       include('wpspy-dashboard.php');      
   }
-    //include('wpspy-dashboard.php');
 }
 
 /* Add all the plugins submenu page */
@@ -355,7 +356,6 @@ function wpspy_activity_log_upgradecheck(){
 
   //Database version - this may need upgrading.
     $installed_version = get_option('wpspy_activity_log_version');
-    // die("installed_version: ".$installed_version." current_version: ".$current_version);
 
     $tbl_settings = "{$wpdb->prefix}wpspy_activity_settings";
 

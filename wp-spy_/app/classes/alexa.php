@@ -8,7 +8,6 @@ class Alexa{
 		self::$xml = @simplexml_load_file('http://data.alexa.com/data?cli=10&dat=snbamz&url='.$domain);
 		self::$domain = $domain;
 
-		// $html = @file_get_contents("http://www.alexa.com/siteinfo/".urlencode(self::$domain));
 		$html = getPageData("http://www.alexa.com/siteinfo/".urlencode(self::$domain));
 		self::$html = $html;
 	}
@@ -83,11 +82,6 @@ class Alexa{
 					$dom->loadHTML($html);
 
 					$tbody = $dom->getElementsByTagName('tbody')->item(0);
-
-					// echo '<pre>';
-
-					// print_r($tbody);
-					// echo '</pre>'; die;
 
 					$html = DOMinnerHTML($tbody);
 
